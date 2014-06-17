@@ -1,9 +1,34 @@
-build
-devel
-bin
-local.properties
-.gradle
-.idea
+# catkin 
+build/
+devel/
 
+#built application files
+*.apk
+*.ap_
+
+#files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# local configuration files (sdk path, etc)
+local.properties
+
+# OSX files
+.DS_Store
+
+#Eclipse project files
+.classpath
+.project
+
+#Android Studio
+.idea
+.gradle
+build/
 
 
