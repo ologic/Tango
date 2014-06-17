@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="gingerbread-0.1.4">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.github.rosjava.android_extras/gingerbread/0.1.4/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.github.rosjava.android_extras/gingerbread/0.1.4/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

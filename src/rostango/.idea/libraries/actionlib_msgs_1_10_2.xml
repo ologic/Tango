@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="actionlib_msgs-1.10.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/android/devel/share/maven/org/ros/rosjava_messages/actionlib_msgs/1.10.2/actionlib_msgs-1.10.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

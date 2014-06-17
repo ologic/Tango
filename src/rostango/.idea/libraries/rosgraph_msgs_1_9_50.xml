@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="rosgraph_msgs-1.9.50">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/android/devel/share/maven/org/ros/rosjava_messages/rosgraph_msgs/1.9.50/rosgraph_msgs-1.9.50.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="ws-commons-util-1.0.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.ws.commons/ws-commons-util/1.0.1/126e80ff798fece634bc94e61f8be8a8da00be60/ws-commons-util-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.ws.commons/ws-commons-util/1.0.1/9a4ae65898d4fadb03f281ee2bcbed4200e394b4/ws-commons-util-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

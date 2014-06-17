@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="com.springsource.org.apache.commons.codec-1.3.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/com.springsource.org.apache.commons.codec/1.3.0/f8690570eb0913d750262bb4223eed30b0d619ed/com.springsource.org.apache.commons.codec-1.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/com.springsource.org.apache.commons.codec/1.3.0/776348e7978ebb7bb7870c75b6765b2780a12078/com.springsource.org.apache.commons.codec-1.3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
