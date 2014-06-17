@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="apache_xmlrpc_common-0.1.6">
-    <CLASSES>
-      <root url="jar://$USER_HOME$/android/devel/share/maven/org/ros/rosjava_core/apache_xmlrpc_common/0.1.6/apache_xmlrpc_common-0.1.6.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
