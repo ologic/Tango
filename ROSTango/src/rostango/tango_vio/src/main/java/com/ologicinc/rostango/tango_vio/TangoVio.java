@@ -6,11 +6,20 @@ import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+import org.ros.tf2_ros.StaticTransformBroadcaster;
 import org.ros.tf2_ros.TransformBroadcaster;
+
+import geometry_msgs.Quaternion;
+import geometry_msgs.TransformStamped;
+
+import com.motorola.atap.androidvioservice.VinsServiceHelper;
 
 public class TangoVio extends RosActivity
 {
-    TransformBroadcaster mTf2Broadcast;
+    private final TransformBroadcaster mTB = new TransformBroadcaster();
+    private final StaticTransformBroadcaster mSTB = new StaticTransformBroadcaster();
+    private TransformStamped tfs = mTB.newMessage();
+    int coordinateConvention = VinsServiceHelper.STATEFORMAT_UNITY;
 
     public TangoVio() {
         super("TangoVio", "TangoVio");
@@ -26,18 +35,12 @@ public class TangoVio extends RosActivity
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        mTf2Broadcast = new TransformBroadcaster();
 
-
-        // XXX NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
-        String host = InetAddressFactory.newNonLoopback().getHostAddress();
-        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(host);
-        // At this point, the user has already been prompted to either enter the URI
-        // of a master to use or to start a master locally.
+        NodeConfiguration nodeConfiguration =
+                NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
         nodeConfiguration.setMasterUri(getMasterUri());
-        nodeMainExecutor.execute(talker, nodeConfiguration);
-        // The RosTextView is also a NodeMain that must be executed in order to
-        // start displaying incoming messages.
-        nodeMainExecutor.execute(rosTextView, nodeConfiguration);
-    }
+        nodeMainExecutor.execute(mTB, nodeConfiguration);
+        nodeMainExecutor.execute(mSTB, nodeConfiguration);
+
+       }
 }

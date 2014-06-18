@@ -33,6 +33,7 @@ repositories {
 
 dependencies {
   // compile project(':local_android_library_dependency')
+  compile files ('libs/androidvioclient.jar')
   compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
   compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
   compile('org.ros.tf2:tf2_ros:0.0.0-SNAPSHOT@aar') {
