@@ -58,20 +58,21 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/poms" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 10 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="std_msgs-0.5.8" level="project" />
-    <orderEntry type="library" exported="" name="tf2_msgs-0.4.9" level="project" />
+    <orderEntry type="library" exported="" name="actionlib_msgs-1.10.6" level="project" />
+    <orderEntry type="library" exported="" name="nav_msgs-1.10.6" level="project" />
     <orderEntry type="library" exported="" name="ws-commons-util-1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="actionlib_msgs-1.10.2" level="project" />
+    <orderEntry type="library" exported="" name="geometry_msgs-1.10.6" level="project" />
     <orderEntry type="library" exported="" name="apache_xmlrpc_server-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
     <orderEntry type="library" exported="" name="rosgraph_msgs-1.9.50" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.io-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="rosjava_tutorial_pubsub-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.logging-1.1.1" level="project" />
-    <orderEntry type="library" exported="" name="geometry_msgs-1.10.2" level="project" />
     <orderEntry type="library" exported="" name="guava-12.0" level="project" />
     <orderEntry type="library" exported="" name="junit-3.8.2" level="project" />
     <orderEntry type="library" exported="" name="jsr305-1.3.9" level="project" />
@@ -85,10 +86,10 @@
     <orderEntry type="library" exported="" name="rosjava_test_msgs-0.1.27" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.net-2.0.0" level="project" />
     <orderEntry type="library" exported="" name="dnsjava-2.1.1" level="project" />
+    <orderEntry type="library" exported="" name="sensor_msgs-1.10.6" level="project" />
     <orderEntry type="library" exported="" name="apache_xmlrpc_client-0.1.6" level="project" />
+    <orderEntry type="library" exported="" name="tf2_msgs-0.4.10" level="project" />
     <orderEntry type="library" exported="" name="android_gingerbread_mr1-0.1.3" level="project" />
-    <orderEntry type="library" exported="" name="nav_msgs-1.10.2" level="project" />
-    <orderEntry type="library" exported="" name="sensor_msgs-1.10.2" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.lang-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="gradle_plugins-0.1.21" level="project" />
   </component>
