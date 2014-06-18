@@ -58,7 +58,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/poms" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 10 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -74,12 +73,14 @@
     <orderEntry type="library" exported="" name="geometry_msgs-1.10.2" level="project" />
     <orderEntry type="library" exported="" name="guava-12.0" level="project" />
     <orderEntry type="library" exported="" name="junit-3.8.2" level="project" />
+    <orderEntry type="library" exported="" name="native-libs-0.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="jsr305-1.3.9" level="project" />
     <orderEntry type="library" exported="" name="gingerbread-0.1.4" level="project" />
     <orderEntry type="library" exported="" name="rosjava-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="message_generation-0.1.21" level="project" />
     <orderEntry type="library" exported="" name="commons-pool-1.6" level="project" />
     <orderEntry type="library" exported="" name="apache_xmlrpc_common-0.1.6" level="project" />
+    <orderEntry type="library" exported="" name="tf2_ros-0.0.0-20140618.184952-13" level="project" />
     <orderEntry type="library" exported="" name="netty-3.5.2.Final" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.codec-1.3.0" level="project" />
     <orderEntry type="library" exported="" name="rosjava_test_msgs-0.1.27" level="project" />
