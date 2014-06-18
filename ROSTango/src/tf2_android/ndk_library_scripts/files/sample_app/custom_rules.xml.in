@@ -1,0 +1,7 @@
+<project name="custom_rules" default="debug">
+    <target name="-pre-build">
+        <exec executable=":{ndk_path}" failonerror="true">
+            <env key="NDK_MODULE_PATH" path=":{module_path}" />
+        </exec>
+    </target>
+</project>

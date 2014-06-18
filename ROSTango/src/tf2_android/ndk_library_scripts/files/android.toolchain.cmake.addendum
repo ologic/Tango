@@ -1,0 +1,3 @@
+SET( THREADS_PTHREAD_ARG 
+     "0"
+     CACHE STRING "Result from TRY_RUN" FORCE)
