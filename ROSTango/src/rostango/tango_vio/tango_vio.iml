@@ -70,6 +70,7 @@
     <orderEntry type="library" exported="" name="apache_xmlrpc_server-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
     <orderEntry type="library" exported="" name="rosgraph_msgs-1.9.50" level="project" />
+    <orderEntry type="library" exported="" name="tf2_ros-0.0.0-20140618.235947-3" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.io-1.4.0" level="project" />
     <orderEntry type="library" exported="" name="com.springsource.org.apache.commons.logging-1.1.1" level="project" />
     <orderEntry type="library" exported="" name="guava-12.0" level="project" />
@@ -79,7 +80,6 @@
     <orderEntry type="library" exported="" name="androidvioclient" level="project" />
     <orderEntry type="library" exported="" name="rosjava-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="message_generation-0.1.21" level="project" />
-    <orderEntry type="library" exported="" name="tf2_ros-0.0.0-20140618.203030-2" level="project" />
     <orderEntry type="library" exported="" name="commons-pool-1.6" level="project" />
     <orderEntry type="library" exported="" name="apache_xmlrpc_common-0.1.6" level="project" />
     <orderEntry type="library" exported="" name="netty-3.5.2.Final" level="project" />
