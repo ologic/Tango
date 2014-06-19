@@ -23,7 +23,7 @@ public class TangoPosePublisher implements NodeMain{
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
-        geometry_msgs.Pose pose = connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
+        pose = connectedNode.getTopicMessageFactory().newFromType(geometry_msgs.Pose._TYPE);
 
         publisher = connectedNode.newPublisher("/tango_pose", geometry_msgs.Pose._TYPE);
     }
