@@ -34,6 +34,14 @@ public class TangoPosePublisher implements NodeMain{
 
     }
 
+    public void setmQuat(Quaternion mQuat) {
+        this.mQuat = mQuat;
+    }
+
+    public void setmPoint(Point mPoint) {
+        this.mPoint = mPoint;
+    }
+
     @Override
     public void onError(Node node, Throwable throwable) {
 
