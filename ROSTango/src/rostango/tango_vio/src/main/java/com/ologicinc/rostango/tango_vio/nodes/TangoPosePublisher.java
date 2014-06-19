@@ -43,6 +43,7 @@ public class TangoPosePublisher implements NodeMain{
         q.setW(w);
         q.setX(x);
         q.setY(y);
+        q.setZ(z);
         pose.setOrientation(q);
     }
 

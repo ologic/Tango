@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
+import com.ologicinc.rostango.tango_vio.nodes.TangoPosePublisher;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -28,6 +29,9 @@ public class TangoVio extends RosActivity {
     private final StaticTransformBroadcaster mSTB = new StaticTransformBroadcaster();
     // XXX private Quaternion mQuat;
     // XXX private Vector3 mPos;
+
+    // Setup TangoPosePublisher
+    private TangoPosePublisher mPosePub;
 
     // Set up messages
     private TransformStamped tfs = mTB.newMessage();
@@ -119,15 +123,17 @@ public class TangoVio extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
+        mPosePub = new TangoPosePublisher();
 
         NodeConfiguration nodeConfiguration =
                 NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
         nodeConfiguration.setMasterUri(getMasterUri());
+        nodeMainExecutor.execute(mPosePub, nodeConfiguration);
         nodeMainExecutor.execute(mTB, nodeConfiguration);
         nodeMainExecutor.execute(mSTB, nodeConfiguration);
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -152,11 +158,13 @@ public class TangoVio extends RosActivity {
         tfs.getTransform().getRotation().setY(state[1]);
         tfs.getTransform().getRotation().setZ(state[2]);
         tfs.getTransform().getRotation().setW(state[3]);
+        mPosePub.setQuat(state[0],state[1],state[2],state[3]);
 
         //mPos
         tfs.getTransform().getTranslation().setX(state[4]);
         tfs.getTransform().getTranslation().setY(state[5]);
         tfs.getTransform().getTranslation().setZ(state[6]);
+        mPosePub.setPoint(state[4],state[5],state[6]);
 
         tfs.getHeader().setFrameId("/world");
         tfs.setChildFrameId("/base_link");
@@ -165,6 +173,7 @@ public class TangoVio extends RosActivity {
         tfs.getHeader().setStamp(t);
         Log.e("TangoVIO", "mTB: " + mTB.toString());
         mTB.sendTransform(tfs);
+        mPosePub.publishPose();
 
     }
 
