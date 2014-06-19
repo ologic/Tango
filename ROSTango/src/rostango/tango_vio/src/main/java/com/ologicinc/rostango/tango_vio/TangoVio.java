@@ -20,17 +20,14 @@ import org.ros.tf2_ros.TransformBroadcaster;
 
 import java.io.File;
 
-import geometry_msgs.Quaternion;
 import geometry_msgs.TransformStamped;
-import geometry_msgs.Vector3;
 
-public class TangoVio extends RosActivity
-{
+public class TangoVio extends RosActivity {
     // Set up Transform Broadcasters
     private final TransformBroadcaster mTB = new TransformBroadcaster();
     private final StaticTransformBroadcaster mSTB = new StaticTransformBroadcaster();
-    private Quaternion mQuat;
-    private Vector3 mPos;
+    // XXX private Quaternion mQuat;
+    // XXX private Vector3 mPos;
 
     // Set up messages
     private TransformStamped tfs = mTB.newMessage();
@@ -43,14 +40,17 @@ public class TangoVio extends RosActivity
     private byte[] b;
     private Bitmap bm;
 
+    private boolean mConnected=false;
+
     public TangoVio() {
         super("TangoVio", "TangoVio");
     }
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         /* Read VIO data from VINs service helper */
@@ -83,6 +83,7 @@ public class TangoVio extends RosActivity
                     while (mVinsServiceHelper != null) {
                         Thread.sleep(30);
 
+                        /*
                         if (superFrameBufferSize == 0) {
                             try {
                                 superFrameBufferSize = mVinsServiceHelper.getSuperFrameWidth()
@@ -96,50 +97,22 @@ public class TangoVio extends RosActivity
                                 e.printStackTrace();
                             }
                         }
+                        */
 
                         final double[] state = getState(coordinateConvention);
-                        if (state.length == 0) { continue; }
+                        if (state.length == 0) {
+                            Log.e("TangoVIO", "ERROR: state.length=0");
+                            continue;
+                        }
 
                         // Generate the TF message
                         updateTf(state);
-
-                        // XXX old stuff
-
-                        //
-                        //final DecimalFormat fourDec = new DecimalFormat("0.0000");
-                        //runOnUiThread(new Runnable() {
-                        //@Override
-                        //public void run() {
-                        //if (state != null) {
-                        //try {
-                        //deviceConvention.setText(formatToString(coordinateConvention));
-                        //rot0.setText(fourDec.format(state[0]));
-                        //rot1.setText(fourDec.format(state[1]));
-                        //rot2.setText(fourDec.format(state[2]));
-                        //rot3.setText(fourDec.format(state[3]));
-                        //pos0.setText(fourDec.format(state[4]));
-                        //pos1.setText(fourDec.format(state[5]));
-                        //pos2.setText(fourDec.format(state[6]));
-                        //stats0.setText(fourDec.format(state[7]));
-                        //stats1.setText(fourDec.format(state[8]));
-                        //stats2.setText(fourDec.format(state[9]));
-                        //stats3.setText(fourDec.format(state[10]));
-                        //stats4.setText(fourDec.format(state[11]));
-                        //stats5.setText(fourDec.format(state[12]));
-                        //} catch (Exception e) {
-                        //e.printStackTrace();
-                        //}
-                        //}
-                        //}
-                        //});
-                        //
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }).start();
-
 
 
     }
@@ -153,32 +126,49 @@ public class TangoVio extends RosActivity
         nodeMainExecutor.execute(mTB, nodeConfiguration);
         nodeMainExecutor.execute(mSTB, nodeConfiguration);
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        mConnected = true;
+
+        // XXX mQuat = tfs.getTransform().getRotation();
+        // XXX mPos = tfs.getTransform().getTranslation();
+
     }
 
     public void updateTf(double[] state) {
 
-        mQuat.setW(state[0]);
-        mQuat.setX(state[1]);
-        mQuat.setY(state[2]);
-        mQuat.setZ(state[3]);
 
-        mPos.setX(state[4]);
-        mPos.setY(state[5]);
-        mPos.setZ(state[6]);
+        if (mConnected==false || mTB==null) {return;}
 
-        tfs.getTransform().setRotation(mQuat);
-        tfs.getTransform().setTranslation(mPos);
+        Log.e("TangoVIO", "Got Here:");
+        Log.e("TangoVIO", "updateTf state[0]:" + state[0]);
+
+        // mQuat
+        tfs.getTransform().getRotation().setX(state[0]);
+        tfs.getTransform().getRotation().setY(state[1]);
+        tfs.getTransform().getRotation().setZ(state[2]);
+        tfs.getTransform().getRotation().setW(state[3]);
+
+        //mPos
+        tfs.getTransform().getTranslation().setX(state[4]);
+        tfs.getTransform().getTranslation().setY(state[5]);
+        tfs.getTransform().getTranslation().setZ(state[6]);
 
         tfs.getHeader().setFrameId("/world");
         tfs.setChildFrameId("/base_link");
         long lt = System.currentTimeMillis();
-        Time t = new Time((int)(lt / 1e3), (int)((lt % 1e3) *1e6));
+        Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
         tfs.getHeader().setStamp(t);
+        Log.e("TangoVIO", "mTB: " + mTB.toString());
         mTB.sendTransform(tfs);
 
     }
 
-    double [] getState(int convention) {
+    double[] getState(int convention) {
         switch (convention) {
             case VinsServiceHelper.STATEFORMAT_UNITY:
                 return mVinsServiceHelper.getStateInUnityFormat();
@@ -191,7 +181,7 @@ public class TangoVio extends RosActivity
             case VinsServiceHelper.STATEFORMAT_ANDROID:
                 return mVinsServiceHelper.getStateInAndroidFormat();
             default:
-                return new double[] {Double.NaN, Double.NaN, Double.NaN, Double.NaN,
+                return new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN,
                         Double.NaN, Double.NaN, Double.NaN};
         }
     }
