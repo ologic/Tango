@@ -38,7 +38,7 @@ public class TangoVio extends RosActivity {
 
     // Set up VIO format
     private VinsServiceHelper mVinsServiceHelper;
-    int coordinateConvention = VinsServiceHelper.STATEFORMAT_UNITY;
+    int coordinateConvention = VinsServiceHelper.STATEFORMAT_FULL_STATE;
 
     private int superFrameBufferSize;
     private byte[] b;
@@ -105,7 +105,7 @@ public class TangoVio extends RosActivity {
 
                         final double[] state = getState(coordinateConvention);
                         if (state.length == 0) {
-                            Log.e("TangoVIO", "ERROR: state.length=0");
+                            // Log.e("TangoVIO", "ERROR: state.length=0");
                             continue;
                         }
 
@@ -150,20 +150,21 @@ public class TangoVio extends RosActivity {
 
         if (mConnected==false || mTB==null) {return;}
 
-        Log.e("TangoVIO", "Got Here:");
-        Log.e("TangoVIO", "updateTf state[0]:" + state[0]);
+        // Log.e("TangoVIO", "Got Here:");
+        // Log.e("TangoVIO", "updateTf state[0]:" + state[0]);
 
         // mQuat
-        tfs.getTransform().getRotation().setX(state[0]);
+        tfs.getTransform().getRotation().setX(state[2]);
         tfs.getTransform().getRotation().setY(state[1]);
-        tfs.getTransform().getRotation().setZ(state[2]);
-        tfs.getTransform().getRotation().setW(state[3]);
+        tfs.getTransform().getRotation().setZ(state[3]);
+        tfs.getTransform().getRotation().setW(state[0]);
         mPosePub.setQuat(state[0],state[1],state[2],state[3]);
 
+
         //mPos
-        tfs.getTransform().getTranslation().setX(state[4]);
-        tfs.getTransform().getTranslation().setY(state[5]);
-        tfs.getTransform().getTranslation().setZ(state[6]);
+        tfs.getTransform().getTranslation().setX(0);
+        tfs.getTransform().getTranslation().setY(0);
+        tfs.getTransform().getTranslation().setZ(0);  // state[6]
         mPosePub.setPoint(state[4],state[5],state[6]);
 
         tfs.getHeader().setFrameId("/world");
@@ -171,7 +172,7 @@ public class TangoVio extends RosActivity {
         long lt = System.currentTimeMillis();
         Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
         tfs.getHeader().setStamp(t);
-        Log.e("TangoVIO", "mTB: " + mTB.toString());
+        // Log.e("TangoVIO", "mTB: " + mTB.toString());
         mTB.sendTransform(tfs);
         mPosePub.publishPose();
 

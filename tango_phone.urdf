@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot name="tango_phone">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="3.14 0 1.57 " />
+      <geometry>
+        <mesh filename="file:///home/brandonb/ROSTango/tango_phone.dae"
+          scale="0.01 0.01 0.01"
+          />
+      </geometry>
+    </visual>
+  </link>
+</robot>
+

@@ -1,0 +1,5 @@
+rosrun map_server map_server ologic_680_x_400.yaml
+rosrun tf2_ros static_transform_publisher 6.7 10.7 1.2 0 0 -0.7071 0.7071 /map /world
+roslaunch tango_phone.launch model:=tango_phone.urdf
+
+
