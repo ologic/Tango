@@ -1,5 +1,10 @@
+6/19/2014 Thursday
 rosrun map_server map_server ologic_680_x_400.yaml
 rosrun tf2_ros static_transform_publisher 6.7 10.7 1.2 0 0 -0.7071 0.7071 /map /world
+rosrun tf2_ros static_transform_publisher 0 0 0 0 0 0 1 /world /base_link
 roslaunch tango_phone.launch model:=tango_phone.urdf
-
-
+---
+6/20/2014 Friday
+rosrun tf2_ros static_transform_publisher 6.8312 10.7722 0 0 0 0 1 /map /world
+rosrun tf2_ros static_transform_publisher 0 0 0 0 -0.7071 0 0.7071 /world /phone_link
+rosrun tf2_ros static_transform_publisher 0 0 0 0 0 0 1 /phone_link /base_link

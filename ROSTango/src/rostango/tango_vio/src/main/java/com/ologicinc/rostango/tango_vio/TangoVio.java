@@ -38,7 +38,7 @@ public class TangoVio extends RosActivity {
 
     // Set up VIO format
     private VinsServiceHelper mVinsServiceHelper;
-    int coordinateConvention = VinsServiceHelper.STATEFORMAT_FULL_STATE;
+    int coordinateConvention = VinsServiceHelper.STATEFORMAT_ANDROID;
 
     private int superFrameBufferSize;
     private byte[] b;
@@ -154,20 +154,20 @@ public class TangoVio extends RosActivity {
         // Log.e("TangoVIO", "updateTf state[0]:" + state[0]);
 
         // mQuat
-        tfs.getTransform().getRotation().setX(state[2]);
+        tfs.getTransform().getRotation().setX(state[0]);
         tfs.getTransform().getRotation().setY(state[1]);
-        tfs.getTransform().getRotation().setZ(state[3]);
-        tfs.getTransform().getRotation().setW(state[0]);
+        tfs.getTransform().getRotation().setZ(state[2]);
+        tfs.getTransform().getRotation().setW(state[3]);
         mPosePub.setQuat(state[0],state[1],state[2],state[3]);
 
 
         //mPos
         tfs.getTransform().getTranslation().setX(0);
         tfs.getTransform().getTranslation().setY(0);
-        tfs.getTransform().getTranslation().setZ(0);  // state[6]
+        tfs.getTransform().getTranslation().setZ(1.2);  // state[6]
         mPosePub.setPoint(state[4],state[5],state[6]);
 
-        tfs.getHeader().setFrameId("/world");
+        tfs.getHeader().setFrameId("/phone_link");
         tfs.setChildFrameId("/base_link");
         long lt = System.currentTimeMillis();
         Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
