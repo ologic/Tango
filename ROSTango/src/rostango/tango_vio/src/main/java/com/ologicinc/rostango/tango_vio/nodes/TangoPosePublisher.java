@@ -60,7 +60,7 @@ public class TangoPosePublisher implements NodeMain{
         long lt = System.currentTimeMillis();
         Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
         pose.getHeader().setStamp(t);
-        pose.getHeader().setFrameId("/world");
+        pose.getHeader().setFrameId("/global");
         publisher.publish(pose);
     }
 

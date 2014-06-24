@@ -5,10 +5,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
+import com.ologicinc.rostango.tango_vio.nodes.TangoOdomPublisher;
 import com.ologicinc.rostango.tango_vio.nodes.TangoPosePublisher;
 
 import org.ros.address.InetAddressFactory;
@@ -27,11 +27,12 @@ public class TangoVio extends RosActivity {
     // Set up Transform Broadcasters
     private final TransformBroadcaster mTB = new TransformBroadcaster();
     private final StaticTransformBroadcaster mSTB = new StaticTransformBroadcaster();
-    // XXX private Quaternion mQuat;
-    // XXX private Vector3 mPos;
 
     // Setup TangoPosePublisher
     private TangoPosePublisher mPosePub;
+
+    // Setup TangoOdomPublisher
+    private TangoOdomPublisher mOdomPub;
 
     // Set up messages
     private TransformStamped tfs = mTB.newMessage();
@@ -84,6 +85,11 @@ public class TangoVio extends RosActivity {
             @Override
             public void run() {
                 try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
                     while (mVinsServiceHelper != null) {
                         Thread.sleep(30);
                         final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
@@ -92,6 +98,12 @@ public class TangoVio extends RosActivity {
                         updateTranslation(posState);
                         Thread.sleep(50);
                         updateRoataion(rotState);
+                        Thread.sleep(50);
+
+                        mPosePub.publishPose();
+
+                        mOdomPub.publishOdom();
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -105,11 +117,13 @@ public class TangoVio extends RosActivity {
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
         mPosePub = new TangoPosePublisher();
+        mOdomPub = new TangoOdomPublisher();
 
         NodeConfiguration nodeConfiguration =
                 NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
         nodeConfiguration.setMasterUri(getMasterUri());
         nodeMainExecutor.execute(mPosePub, nodeConfiguration);
+        nodeMainExecutor.execute(mOdomPub, nodeConfiguration);
         nodeMainExecutor.execute(mTB, nodeConfiguration);
         nodeMainExecutor.execute(mSTB, nodeConfiguration);
 
@@ -146,6 +160,9 @@ public class TangoVio extends RosActivity {
         tfs.getHeader().setStamp(t);
 
         mTB.sendTransform(tfs);
+
+        mPosePub.setPoint(state[5],-state[4],0);
+        mOdomPub.setPosePoint(state[5],-state[4],0);
     }
     public void updateRoataion(double[] state) {
 
@@ -171,6 +188,8 @@ public class TangoVio extends RosActivity {
         tfs.getHeader().setStamp(t);
 
         mTB.sendTransform(tfs);
+        mPosePub.setQuat(-state[2],state[0],-state[1],state[3]);
+        mOdomPub.setPoseQuat(-state[2], state[0], -state[1], state[3]);
     }
 
 }
