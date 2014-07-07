@@ -73,6 +73,8 @@ public class DepthViewSurface extends SurfaceView implements Callback,
 
     private RawImageListener rawImageListener;
     private int[] rawDepthData= new int[57600];
+
+    private boolean skip_frame = false;
     /**
      * Create surface and an array to hold color pixels.
      */
@@ -189,8 +191,10 @@ public class DepthViewSurface extends SurfaceView implements Callback,
         mScanDepthMm = getDepthToScan(mScanDepthMm, depthAvg);
         postInvalidate();  // Cause a redraw.
 
-        if (rawImageListener != null)
+        if (rawImageListener != null && !skip_frame) {
             rawImageListener.onNewRawImage(rawDepthData, SuperFrame.DB_WIDTH, SuperFrame.DB_HEIGHT);
+        }
+        skip_frame = !skip_frame;
     }
 
     /**
