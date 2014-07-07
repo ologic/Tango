@@ -60,7 +60,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/poms" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 10 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 10 Platform (1)" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="std_msgs-0.5.8" level="project" />
     <orderEntry type="library" exported="" name="actionlib_msgs-1.10.6" level="project" />
