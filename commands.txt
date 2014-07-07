@@ -8,3 +8,10 @@ roslaunch tango_phone.launch model:=tango_phone.urdf
 rosrun tf2_ros static_transform_publisher 6.8312 10.7722 0 0 0 0 1 /map /world
 rosrun tf2_ros static_transform_publisher 0 0 0 0 -0.7071 0 0.7071 /world /phone_link
 rosrun tf2_ros static_transform_publisher 0 0 0 0 0 0 1 /phone_link /base_link
+---
+7/7/2014 Monday
+roslaunch tango_phone.launch model:=tango_phone.urdf
+rosrun map_server map_server ologic_680_x_400.yaml
+rosrun tf2_ros static_transform_publisher 6.7 10.7 1.2 0 0 0 1 /map /global
+
+
