@@ -19,5 +19,6 @@ include 'my_android_project'
 include 'my_android_library_project'
 */
 include 'tango_vio'
+include 'android_tutorial_image_transport'
 include 'android_tutorial_pubsub'
-
+include 'tango_depthimage'
