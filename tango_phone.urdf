@@ -5,7 +5,7 @@
       <!-- <origin xyz="0 0 0" rpy="3.14 0 1.57 " /> -->
       <origin xyz="0 0 0" rpy="0 -1.57 0" /> -->
       <geometry>
-        <mesh filename="file:///home/rohan/Tango/tango_phone.dae"
+        <mesh filename="file:///home/brandonb/ROSTango/tango_phone.dae"
           scale="0.01 0.01 0.01"
           />
       </geometry>
