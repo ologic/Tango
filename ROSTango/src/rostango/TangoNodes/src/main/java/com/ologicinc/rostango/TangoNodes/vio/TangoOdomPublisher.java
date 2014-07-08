@@ -1,10 +1,7 @@
 package com.ologicinc.rostango.TangoNodes.vio;
 
 import org.ros.message.Time;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 
 import geometry_msgs.Point;
@@ -16,7 +13,7 @@ import nav_msgs.Odometry;
 /**
  * Created by rohan on 6/23/14.
  */
-public class TangoOdomPublisher implements NodeMain{
+class TangoOdomPublisher{
     private PoseWithCovariance pose;
     private PoseWithCovariance last_pose;
     TwistWithCovariance twist;
@@ -24,13 +21,7 @@ public class TangoOdomPublisher implements NodeMain{
     private Publisher<Odometry> publisher;
     private long last_time;
 
-
-    public GraphName getDefaultNodeName() {
-        return GraphName.of("tango_odom_publisher");
-    }
-
-    @Override
-    public void onStart(ConnectedNode connectedNode) {
+    public TangoOdomPublisher(ConnectedNode connectedNode){
         odom = connectedNode.getTopicMessageFactory().newFromType(Odometry._TYPE);
 
         publisher = connectedNode.newPublisher("/odom_visual", Odometry._TYPE);
@@ -48,16 +39,6 @@ public class TangoOdomPublisher implements NodeMain{
         last_pose.getPose().getOrientation().setW(1);
 
         last_time = System.currentTimeMillis();
-    }
-
-    @Override
-    public void onShutdown(Node node) {
-
-    }
-
-    @Override
-    public void onShutdownComplete(Node node) {
-
     }
 
     public void setPoseQuat(double x, double y, double z, double w) {
@@ -98,11 +79,6 @@ public class TangoOdomPublisher implements NodeMain{
         twist.getTwist().getLinear().setY(y_delta / time_delta);
         twist.getTwist().getLinear().setZ(z_delta / time_delta);
         return twist;
-    }
-
-    @Override
-    public void onError(Node node, Throwable throwable) {
-
     }
 
 }

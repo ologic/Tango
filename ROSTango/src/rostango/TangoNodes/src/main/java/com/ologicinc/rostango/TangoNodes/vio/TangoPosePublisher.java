@@ -1,10 +1,7 @@
 package com.ologicinc.rostango.TangoNodes.vio;
 
 import org.ros.message.Time;
-import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
-import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 
 import geometry_msgs.Point;
@@ -14,29 +11,13 @@ import geometry_msgs.Quaternion;
 /**
  * Created by Rohan Agrawal on 6/18/14.
  */
-public class TangoPosePublisher implements NodeMain{
+class TangoPosePublisher{
     private PoseStamped pose;
     private Publisher<PoseStamped> publisher;
 
-    public GraphName getDefaultNodeName() {
-        return GraphName.of("tango_pose_publisher");
-    }
-
-    @Override
-    public void onStart(ConnectedNode connectedNode) {
+    public TangoPosePublisher(ConnectedNode connectedNode){
         pose = connectedNode.getTopicMessageFactory().newFromType(PoseStamped._TYPE);
-
         publisher = connectedNode.newPublisher("/tango_pose", PoseStamped._TYPE);
-    }
-
-    @Override
-    public void onShutdown(Node node) {
-
-    }
-
-    @Override
-    public void onShutdownComplete(Node node) {
-
     }
 
     public void setQuat(double x, double y, double z, double w) {
@@ -62,11 +43,6 @@ public class TangoPosePublisher implements NodeMain{
         pose.getHeader().setStamp(t);
         pose.getHeader().setFrameId("/global");
         publisher.publish(pose);
-    }
-
-    @Override
-    public void onError(Node node, Throwable throwable) {
-
     }
 
 }
