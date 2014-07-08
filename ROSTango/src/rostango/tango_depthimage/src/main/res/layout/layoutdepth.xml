@@ -6,7 +6,7 @@
     android:background="#ff000000"
     tools:context=".Draw">
 
-    <com.ologicinc.rostango.tango_depthimage.RosDepthViewSurface
+    <com.ologicinc.rostango.TangoNodes.depth.RosDepthViewSurface
         android:id="@+id/depthview"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

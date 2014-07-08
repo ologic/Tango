@@ -15,6 +15,8 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import com.ologicinc.rostango.TangoNodes.depth.*;
+
 /**
  * DepthScanActivity is the launch activity of the PeanutDepthScan app.
  * PeanutDepthScan is a real-time camera app that scans objects by drawing a
