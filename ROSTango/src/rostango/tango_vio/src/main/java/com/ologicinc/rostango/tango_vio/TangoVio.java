@@ -8,8 +8,7 @@ import android.os.Environment;
 import android.widget.Toast;
 
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
-import com.ologicinc.rostango.tango_vio.nodes.TangoOdomPublisher;
-import com.ologicinc.rostango.tango_vio.nodes.TangoPosePublisher;
+import com.ologicinc.rostango.TangoNodes.vio.*;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
