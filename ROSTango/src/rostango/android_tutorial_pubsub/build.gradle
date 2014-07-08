@@ -15,17 +15,15 @@
  */
 
 repositories {
-    maven {
-        url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master'
-    }
+    maven { url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master' }
     mavenCentral()
 }
 
 dependencies {
-  // compile project(':android_gingerbread_mr1')
-  compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
-  compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
-  compile 'org.ros.rosjava_core:rosjava_tutorial_pubsub:[0.1,0.2)'
+    // compile project(':android_gingerbread_mr1')
+    compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
+    compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
+    compile 'org.ros.rosjava_core:rosjava_tutorial_pubsub:[0.1,0.2)'
 }
 
 apply plugin: 'android'
@@ -37,4 +35,9 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
     compileSdkVersion 10
+    defaultConfig {}
+    productFlavors {
+    }
+    buildTypes {
+    }
 }

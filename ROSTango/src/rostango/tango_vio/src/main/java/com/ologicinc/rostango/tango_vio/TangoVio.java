@@ -164,6 +164,7 @@ public class TangoVio extends RosActivity {
         mPosePub.setPoint(state[5],-state[4],0);
         mOdomPub.setPosePoint(state[5],-state[4],0);
     }
+    
     public void updateRoataion(double[] state) {
 
 
