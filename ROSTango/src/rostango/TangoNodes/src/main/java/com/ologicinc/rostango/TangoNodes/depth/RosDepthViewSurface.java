@@ -1,4 +1,4 @@
-package com.ologicinc.rostango.tango_depthimage;
+package com.ologicinc.rostango.TangoNodes.depth;
 
 import android.content.Context;
 import android.util.AttributeSet;

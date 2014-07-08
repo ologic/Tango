@@ -4,7 +4,7 @@
  *
  */
 
-package com.ologicinc.rostango.tango_depthimage;
+package com.ologicinc.rostango.TangoNodes.depth;
 
 /**
  * This class defines a Superframe for Peanut mobile device. A superframe is an

@@ -1,4 +1,4 @@
-package com.ologicinc.rostango.tango_vio.nodes;
+package com.ologicinc.rostango.TangoNodes.vio;
 
 import org.ros.message.Time;
 import org.ros.namespace.GraphName;

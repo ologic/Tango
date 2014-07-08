@@ -1,4 +1,4 @@
-package com.ologicinc.rostango.tango_depthimage;
+package com.ologicinc.rostango.TangoNodes.depth;
 
 import android.graphics.Rect;
 import android.graphics.YuvImage;

@@ -1,4 +1,4 @@
-package com.ologicinc.rostango.tango_depthimage;
+package com.ologicinc.rostango.TangoNodes.depth;
 
 /**
  * Created by Rohan Agrawal on 7/3/14.

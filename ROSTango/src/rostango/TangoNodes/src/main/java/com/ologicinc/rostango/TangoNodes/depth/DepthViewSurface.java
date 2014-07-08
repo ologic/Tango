@@ -4,7 +4,7 @@
  *
  */
 
-package com.ologicinc.rostango.tango_depthimage;
+package com.ologicinc.rostango.TangoNodes.depth;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,7 +18,6 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
 import java.util.List;
-
 
 
 /**
@@ -84,10 +83,9 @@ public class DepthViewSurface extends SurfaceView implements Callback,
         // Create an array the same size as depth buffer.
         mDepthColorPixels = new int[SuperFrame.DB_WIDTH * SuperFrame.DB_HEIGHT];
         // Set colors to draw scan line.
-        mColorNear = getResources().getColor(R.color.scan_yellow);
-        mColorMedium = getResources().getColor(R.color.scan_lime_green);
-        mColorFar = getResources()
-                .getColor(R.color.scan_lime_green_transparent);
+        mColorNear = 0xffffff00;  // yellow
+        mColorMedium = 0xff64ff00;  // lime-green
+        mColorFar = 0x7764ff00;  // lime-green-transparent
     }
 
     public DepthViewSurface(Context context) {
