@@ -17,6 +17,7 @@ public class VioNode implements NodeMain {
 
     private TangoOdomPublisher mTangoOdomPublisher;
     private TangoPosePublisher mTangoPosePublisher;
+    private TangoTfPublisher mTangoTfPublisher;
 
     public VioNode(VinsServiceHelper vins){
         mVinsServiceHelper = vins;
@@ -31,6 +32,7 @@ public class VioNode implements NodeMain {
     public void onStart(ConnectedNode node) {
         mTangoOdomPublisher = new TangoOdomPublisher(node);
         mTangoPosePublisher = new TangoPosePublisher(node);
+        mTangoTfPublisher = new TangoTfPublisher(node);
 
         node.executeCancellableLoop(new CancellableLoop() {
            @Override
@@ -41,13 +43,14 @@ public class VioNode implements NodeMain {
                // Generate the TF message
 
                updateTranslation(posState);
-               Thread.sleep(50);
+               Thread.sleep(30);
 
                updateRoataion(rotState);
-               Thread.sleep(50);
+               Thread.sleep(30);
 
                mTangoOdomPublisher.publishOdom();
                mTangoPosePublisher.publishPose();
+               mTangoTfPublisher.publishTransforms();
             }
         });
     }
@@ -66,54 +69,14 @@ public class VioNode implements NodeMain {
     }
 
     public void updateTranslation(double[] state) {
-//        // mQuat
-//        tfs.getTransform().getRotation().setX(0);
-//        tfs.getTransform().getRotation().setY(0);
-//        tfs.getTransform().getRotation().setZ(0);
-//        tfs.getTransform().getRotation().setW(1);
-//
-//        //mPos
-//        tfs.getTransform().getTranslation().setX(state[5]);
-//        tfs.getTransform().getTranslation().setY(-state[4]);
-//        tfs.getTransform().getTranslation().setZ(state[6]);  // state[6]
-//
-//        tfs.getHeader().setFrameId("/global");
-//        tfs.setChildFrameId("/unity");
-//
-//        long lt = System.currentTimeMillis();
-//        Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
-//        tfs.getHeader().setStamp(t);
-//
-//        mTB.sendTransform(tfs);
-
-
-        mTangoOdomPublisher.setPosePoint(state[5],-state[4], 0x0);
-        mTangoPosePublisher.setPoint(state[5],-state[4], 0x0);
+        mTangoOdomPublisher.setPosePoint(state[5],-state[4], state[6]);
+        mTangoPosePublisher.setPoint(state[5],-state[4], state[6]);
+        mTangoTfPublisher.setTranslation(state[5],-state[4], state[6]);
     }
 
     public void updateRoataion(double[] state) {
-//        // mQuat
-//        tfs.getTransform().getRotation().setX(-state[2]);
-//        tfs.getTransform().getRotation().setY(state[0]);
-//        tfs.getTransform().getRotation().setZ(-state[1]);
-//        tfs.getTransform().getRotation().setW(state[3]);
-//
-//        //mPos
-//        tfs.getTransform().getTranslation().setX(0);
-//        tfs.getTransform().getTranslation().setY(0);
-//        tfs.getTransform().getTranslation().setZ(0);  // state[6]
-//
-//        tfs.getHeader().setFrameId("/unity");
-//        tfs.setChildFrameId("/phone");
-//
-//        long lt = System.currentTimeMillis();
-//        Time t = new Time((int) (lt / 1e3), (int) ((lt % 1e3) * 1e6));
-//        tfs.getHeader().setStamp(t);
-//
-//        mTB.sendTransform(tfs);
-
-
         mTangoOdomPublisher.setPoseQuat(-state[2], state[0], -state[1], state[3]);
         mTangoPosePublisher.setQuat(-state[2],state[0],-state[1],state[3]);
+        mTangoTfPublisher.setRotation(-state[2],state[0],-state[1],state[3]);
     }
 }
