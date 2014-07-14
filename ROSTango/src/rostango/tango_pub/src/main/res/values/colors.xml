@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="scan_yellow">#ffffff00</color>
-    <color name="scan_lime_green">#ff64ff00</color>
-    <color name="scan_lime_green_transparent">#7764ff00</color>
-</resources>

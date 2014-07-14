@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Brandon Blodget.
+ * Copyright (C) 2014 Rohan Agrawal.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -23,17 +23,27 @@
    the patch version to avoid breakages due to api changes
    which usually occur on minor and major version numbers.
 */
+/* 
+dependencies {
+  compile project(':local_android_library_dependency')
+  compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
+  compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
+}
+*/
 repositories {
-    maven { url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master' }
+    maven {
+        url 'https://github.com/rosjava/rosjava_mvn_repo/raw/master'
+    }
     mavenCentral()
 }
 
 dependencies {
-    /* compile project(':local_android_library_dependency') */
-    compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
+    //compile project(':local_android_library_dependency')
+    compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,0.2)'
+    compile 'org.ros.android_core:android_honeycomb_mr2:[0.1,0.2)'
     compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
-    compile 'org.ros.tf2:tf2_ros:0.0.0-SNAPSHOT@aar'
-    compile files('libs/androidvioclient.jar')
+//    compile files ('libs/androidvioclient.jar')
+    compile project(':TangoNodes')
 }
 
 apply plugin: 'android'
@@ -45,10 +55,5 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
     compileSdkVersion 18
-    defaultConfig {}
-    productFlavors {
-    }
-    buildTypes {
-    }
 }
  
