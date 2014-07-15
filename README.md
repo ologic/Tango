@@ -5,3 +5,5 @@ Everything related to Google Project Tango and open software OLogic has released
 
 
 https://github.com/ologic/Tango/wiki
+
+Ovbviously this repo is a work-in-progress.  We are making changes daily to everything here, improving the documentation, and working toward making the examples more complete.  Please be patient and don't hesitate to message us if we have broken something along the way and you are trying to build or having trouble with the code.
