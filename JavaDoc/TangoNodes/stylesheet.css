@@ -119,7 +119,7 @@ Navigation bar styles
 }
 /* Navigation bar list styles */
 .topNav ul.navList, .bottomNav ul.navList {
-    background-color:#EEEEFF;
+    background-color:#73A6D6;
     padding:7px 5px;
     margin:0;
     float:left;
@@ -235,7 +235,7 @@ Heading styles
     margin:0 0 10px 0;
 }
 .serializedFormContainer ul.blockList li.blockList h2 {
-    background:#EEEEFF;
+    background:#73A6D6;
     border:2px ridge;
     padding:3px;
     margin:0 0 15px 0;
@@ -246,7 +246,7 @@ Heading styles
     padding:3px;
 }
 .serializedFormContainer ul.blockList li.blockList ul.blockList li.blockList h3 {
-    background:#EEEEFF;
+    background:#73A6D6;
     margin:0 0 15px 0;
     padding:3px;
 }
@@ -268,7 +268,7 @@ div.summary ul.blockList ul.blockList li.blockList h3 {
     padding-left:5px;
 }
 div.summary ul.blockList ul.blockList ul.blockList li.blockList h3 {
-    background:#EEEEFF;
+    background:#73A6D6;
     border:0;
     border-bottom:2px ridge;
 }
@@ -297,7 +297,7 @@ Table styles
 .constantValuesContainer table caption{
     font-size:0.95em;
     padding:3px;
-    background:#EEEEFF;
+    background:#73A6D6;
 }
 .constantValuesContainer table td, .constantValuesContainer table th {
     border:2px ridge;
@@ -315,7 +315,7 @@ Table styles
 .classUseContainer ul li ul li table caption{
     font-size:0.95em;
     padding:3px;
-    background:#EEEEFF;
+    background:#73A6D6;
 }
 .classUseContainer table td, .classUseContainer table th {
     border:2px ridge;
