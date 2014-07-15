@@ -50,7 +50,7 @@ dl dd ul li {
     margin:10px 0 10px 0;
 }
 caption {
-    background: ##2C79C2;
+    background: #CCCCFF;
     color:#000000;
     text-align: left;
     font-size: 150%;
@@ -119,7 +119,7 @@ Navigation bar styles
 }
 /* Navigation bar list styles */
 .topNav ul.navList, .bottomNav ul.navList {
-    background-color:#73A6D6;
+    background-color:#EEEEFF;
     padding:7px 5px;
     margin:0;
     float:left;
@@ -229,13 +229,13 @@ Heading styles
     margin:10px 0;
 }
 .constantValuesContainer h2 {
-    background:#2C79C2;
+    background:#CCCCFF;
     border:2px ridge;
     padding:3px;
     margin:0 0 10px 0;
 }
 .serializedFormContainer ul.blockList li.blockList h2 {
-    background:#73A6D6;
+    background:#EEEEFF;
     border:2px ridge;
     padding:3px;
     margin:0 0 15px 0;
@@ -246,29 +246,29 @@ Heading styles
     padding:3px;
 }
 .serializedFormContainer ul.blockList li.blockList ul.blockList li.blockList h3 {
-    background:#73A6D6;
+    background:#EEEEFF;
     margin:0 0 15px 0;
     padding:3px;
 }
 .serializedFormContainer ul.blockList li.blockList ul.blockList li.blockList ul.blockList li.blockList h3 {
-    background:#2C79C2;
+    background:#CCCCFF;
     margin:0 0 15px 0;
     padding:3px;
     border:2px ridge;
 }
 ul.blockList ul.blockList li.blockList h3, ul.blockList ul.blockList li.blockList h3 {
-    background:#2C79C2;
+    background:#CCCCFF;
     border:2px ridge;
     padding-left:5px;
 }
 div.summary ul.blockList ul.blockList li.blockList h3 {
-    background:#2C79C2;
+    background:#CCCCFF;
     border:0;
     border:2px ridge;
     padding-left:5px;
 }
 div.summary ul.blockList ul.blockList ul.blockList li.blockList h3 {
-    background:#73A6D6;
+    background:#EEEEFF;
     border:0;
     border-bottom:2px ridge;
 }
@@ -297,7 +297,7 @@ Table styles
 .constantValuesContainer table caption{
     font-size:0.95em;
     padding:3px;
-    background:#73A6D6;
+    background:#EEEEFF;
 }
 .constantValuesContainer table td, .constantValuesContainer table th {
     border:2px ridge;
@@ -315,7 +315,7 @@ Table styles
 .classUseContainer ul li ul li table caption{
     font-size:0.95em;
     padding:3px;
-    background:#73A6D6;
+    background:#EEEEFF;
 }
 .classUseContainer table td, .classUseContainer table th {
     border:2px ridge;
