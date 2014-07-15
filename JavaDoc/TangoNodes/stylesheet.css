@@ -50,7 +50,7 @@ dl dd ul li {
     margin:10px 0 10px 0;
 }
 caption {
-    background: ##185A99;
+    background: ##2C79C2;
     color:#000000;
     text-align: left;
     font-size: 150%;
@@ -229,7 +229,7 @@ Heading styles
     margin:10px 0;
 }
 .constantValuesContainer h2 {
-    background:#185A99;
+    background:#2C79C2;
     border:2px ridge;
     padding:3px;
     margin:0 0 10px 0;
@@ -251,18 +251,18 @@ Heading styles
     padding:3px;
 }
 .serializedFormContainer ul.blockList li.blockList ul.blockList li.blockList ul.blockList li.blockList h3 {
-    background:#185A99;
+    background:#2C79C2;
     margin:0 0 15px 0;
     padding:3px;
     border:2px ridge;
 }
 ul.blockList ul.blockList li.blockList h3, ul.blockList ul.blockList li.blockList h3 {
-    background:#185A99;
+    background:#2C79C2;
     border:2px ridge;
     padding-left:5px;
 }
 div.summary ul.blockList ul.blockList li.blockList h3 {
-    background:#185A99;
+    background:#2C79C2;
     border:0;
     border:2px ridge;
     padding-left:5px;
