@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find tango_bringup)/launch/tango_urdf.launch">
+  </include>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tango_bringup)/rviz/tango_vio_map.rviz"/>
+</launch>
+
