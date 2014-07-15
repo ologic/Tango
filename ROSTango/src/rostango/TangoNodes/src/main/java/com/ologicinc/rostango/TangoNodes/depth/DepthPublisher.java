@@ -33,7 +33,7 @@ import org.ros.node.topic.Publisher;
  *
  * @author damonkohler@google.com (Damon Kohler)
  */
-class DepthPublisher implements RawImageListener {
+public class DepthPublisher implements RawImageListener {
 
     private final ConnectedNode connectedNode;
     private final Publisher<sensor_msgs.Image> imagePublisher;
