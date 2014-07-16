@@ -1,0 +1,4 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tango_bringup)/rviz/tango_depth.rviz"/>
+</launch>
+
