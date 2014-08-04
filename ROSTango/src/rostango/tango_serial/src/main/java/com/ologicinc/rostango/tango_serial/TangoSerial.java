@@ -19,7 +19,6 @@ package com.ologicinc.rostango.tango_serial;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
-// import android.util.Log;
 // import android.widget.Toast;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
@@ -31,6 +30,7 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+
 public class TangoSerial extends RosActivity {
    private VinsServiceHelper  mVinsServiceHelper;
 
@@ -41,7 +41,8 @@ public class TangoSerial extends RosActivity {
    // But this works for now.
    private static UsbSerialDriver mSerialDriver = null;
 
-   public TangoSerial() {
+
+    public TangoSerial() {
         super("TangoSerial", "TangoSerial");
     }
 
@@ -50,19 +51,21 @@ public class TangoSerial extends RosActivity {
         super.onCreate(savedInstanceState);
         /* Read VIO data from VINs service helper */
         mVinsServiceHelper = new VinsServiceHelper(this);
-
         setContentView(R.layout.main);
     }
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
         VioNode vioNode = new VioNode(mVinsServiceHelper);
+        VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver);
 
         NodeConfiguration nodeConfiguration =
                 NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
         nodeConfiguration.setMasterUri(getMasterUri());
         nodeMainExecutor.execute(vioNode, nodeConfiguration);
+        nodeMainExecutor.execute(vioListenerNode, nodeConfiguration);
     }
+
 
     // Starts the activity, using the supplied node executor and driver instance.
     static public void show(Context context, UsbSerialDriver driver) {
