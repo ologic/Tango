@@ -24,3 +24,7 @@ include 'tango_vio'
 include 'tango_depthimage'
 include 'TangoNodes'
 include 'tango_pub'
+include 'usbserial'
+include 'tango_serial'
+
+
