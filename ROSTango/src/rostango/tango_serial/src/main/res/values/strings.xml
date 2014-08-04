@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TangoSerial</string>
+    <string name="app_title">TangoSerial</string>
+    <string name="app_connected">USB device Connected</string>
+    <string name="refreshing">Refreshing&#8230;</string>
 </resources>
