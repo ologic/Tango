@@ -12,6 +12,7 @@ import org.ros.node.topic.Subscriber;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
 
@@ -31,8 +32,6 @@ public class VioListenerNode implements NodeMain {
     private static UsbSerialDriver mSerialDriver = null;
     private InputStream mInputStream;
     private OutputStream mOutputStream;
-
-    private int mCount = 48;
 
     public VioListenerNode(UsbSerialDriver serialDriver) {
         mSerialDriver = serialDriver;
@@ -54,14 +53,30 @@ public class VioListenerNode implements NodeMain {
             @Override
             public void onNewMessage(PoseStamped message) {
                 if (DEBUG) Log.d(TAG, message.toString());
+                String quat;
+                String pos;
+
+                pos = String.format("\npos: x: %.4f, y: %.4f, z: %.4f\n",
+                        message.getPose().getPosition().getX(),
+                        message.getPose().getPosition().getY(),
+                        message.getPose().getPosition().getZ());
+
+                quat = String.format("quat: x: %.4f, y: %.4f, z: %.4f, w: %.4f\n",
+                        message.getPose().getOrientation().getX(),
+                        message.getPose().getOrientation().getY(),
+                        message.getPose().getOrientation().getZ(),
+                        message.getPose().getOrientation().getW()
+                        );
+
+                byte[] pos_byte = pos.getBytes(Charset.forName("UTF-8"));
+                byte[] quat_byte = quat.getBytes(Charset.forName("UTF-8"));
+
                 try {
-                    mOutputStream.write(mCount);
+                    mOutputStream.write(pos_byte);
+                    mOutputStream.write(quat_byte);
+                    mOutputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
-                mCount = mCount + 1;
-                if (mCount > 57) {
-                    mCount = 48;
                 }
             }
         });
