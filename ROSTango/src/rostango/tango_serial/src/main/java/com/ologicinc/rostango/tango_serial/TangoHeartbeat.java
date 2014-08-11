@@ -61,6 +61,7 @@ public class TangoHeartbeat {
         mHeartbeatMsg.base_mode = MAV_MODE.MAV_MODE_PREFLIGHT;
         mHeartbeatMsg.custom_mode = 0;
         mHeartbeatMsg.system_status = MAV_STATE.MAV_STATE_ACTIVE;
+        mHeartbeatMsg.mavlink_version = 3;
 
 	}
 
