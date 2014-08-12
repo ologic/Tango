@@ -12,11 +12,15 @@ import org.ros.node.topic.Subscriber;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+// XXX import java.nio.charset.Charset;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
 
 import geometry_msgs.PoseStamped;
+
+import com.MAVLink.Messages.*;
+import com.MAVLink.Messages.ardupilotmega.*;
+import com.MAVLink.Messages.enums.*;
 
 
 /**
@@ -33,7 +37,10 @@ public class VioListenerNode implements NodeMain {
     private InputStream mInputStream;
     private OutputStream mOutputStream;
 
+    private TangoHeartbeat mHeartbeat;
+
     public VioListenerNode(UsbSerialDriver serialDriver) {
+
         mSerialDriver = serialDriver;
     }
 
@@ -47,6 +54,10 @@ public class VioListenerNode implements NodeMain {
         // Connect the usb
         usbConnect();
 
+        // Create the heartbeat
+        mHeartbeat = new TangoHeartbeat(this,1);
+        mHeartbeat.setActive(true);
+
         mSubscriber = connectedNode.newSubscriber("/tango_pose", PoseStamped._TYPE);
 
         mSubscriber.addMessageListener(new MessageListener<PoseStamped>() {
@@ -56,6 +67,23 @@ public class VioListenerNode implements NodeMain {
                 String quat;
                 String pos;
 
+                msg_vision_position_estimate mavLinkVision = new msg_vision_position_estimate();
+                mavLinkVision.x = (float)message.getPose().getPosition().getX();
+                mavLinkVision.y = (float)message.getPose().getPosition().getY();
+                mavLinkVision.z = (float)message.getPose().getPosition().getZ();
+
+                mavLinkVision.pitch = 0.0f;
+                mavLinkVision.roll = 0.0f;
+                mavLinkVision.yaw = 0.0f;
+
+                long lt = System.currentTimeMillis() * 1000;
+                mavLinkVision.usec = lt;
+
+                MAVLinkPacket mavPacket = mavLinkVision.pack();
+                sendMavMessage(mavPacket);
+
+
+                /*
                 pos = String.format("\npos: x: %.4f, y: %.4f, z: %.4f\n",
                         message.getPose().getPosition().getX(),
                         message.getPose().getPosition().getY(),
@@ -68,6 +96,7 @@ public class VioListenerNode implements NodeMain {
                         message.getPose().getOrientation().getW()
                         );
 
+
                 byte[] pos_byte = pos.getBytes(Charset.forName("UTF-8"));
                 byte[] quat_byte = quat.getBytes(Charset.forName("UTF-8"));
 
@@ -78,8 +107,20 @@ public class VioListenerNode implements NodeMain {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                */
             }
         });
+    }
+
+    public synchronized void sendMavMessage(MAVLinkPacket mavPacket) {
+        byte[] mavBuffer = mavPacket.encodePacket();
+
+        try {
+            mOutputStream.write(mavBuffer);
+            mOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
