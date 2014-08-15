@@ -148,7 +148,7 @@ public class VioListenerNode implements NodeMain {
                 mSerialDriver.open();
 
                 // Set the serial parameters.
-                mSerialDriver.setParameters(115200, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
+                mSerialDriver.setParameters(230400, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
 
                 // Associate input/output streams with the USB driver.
                 mInputStream = mSerialDriver.getInputStream();
