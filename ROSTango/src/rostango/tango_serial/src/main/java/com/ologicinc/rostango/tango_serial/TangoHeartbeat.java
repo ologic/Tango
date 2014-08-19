@@ -56,6 +56,8 @@ public class TangoHeartbeat {
 		this.period = freqHz;
 
         this.mHeartbeatMsg = new msg_heartbeat();
+        // ?? needed ?? mHeartbeatMsg.sysid = 100;
+        // ?? needed ?? mHeartbeatMsg.compid = 50;
         mHeartbeatMsg.type = MAV_TYPE.MAV_TYPE_GENERIC;
         mHeartbeatMsg.autopilot = MAV_AUTOPILOT.MAV_AUTOPILOT_GENERIC;
         mHeartbeatMsg.base_mode = MAV_MODE.MAV_MODE_PREFLIGHT;

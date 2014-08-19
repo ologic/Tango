@@ -68,6 +68,8 @@ public class VioListenerNode implements NodeMain {
                 String pos;
 
                 msg_vision_position_estimate mavLinkVision = new msg_vision_position_estimate();
+                // ?? needed ?? mavLinkVision.sysid = 100;
+                // ?? needed ?? mavLinkVision.compid = 50;
                 mavLinkVision.x = (float)message.getPose().getPosition().getX();
                 mavLinkVision.y = (float)message.getPose().getPosition().getY();
                 mavLinkVision.z = (float)message.getPose().getPosition().getZ();
