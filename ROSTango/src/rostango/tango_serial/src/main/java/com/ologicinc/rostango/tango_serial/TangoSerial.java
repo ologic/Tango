@@ -19,27 +19,33 @@ package com.ologicinc.rostango.tango_serial;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 // import android.widget.Toast;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
 import com.ologicinc.rostango.TangoNodes.vio.VioNode;
 
+import org.ros.address.Address;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
 
 public class TangoSerial extends RosActivity {
-   private VinsServiceHelper  mVinsServiceHelper;
+    private VinsServiceHelper  mVinsServiceHelper;
 
-   // USB serial communication.
-   // Driver instance, passed in statically via show(Context, UsbSerialDriver).
-   // It'd be cleaner to re-create the driver using
-   // arguments passed in with the startActivity(Intent) intent.
-   // But this works for now.
-   private static UsbSerialDriver mSerialDriver = null;
+    // USB serial communication.
+    // Driver instance, passed in statically via show(Context, UsbSerialDriver).
+    // It'd be cleaner to re-create the driver using
+    // arguments passed in with the startActivity(Intent) intent.
+    // But this works for now.
+    private static UsbSerialDriver mSerialDriver = null;
+
+    private static final boolean DEBUG = true;
+    private static final String TAG = TangoSerial.class.getSimpleName();
 
 
     public TangoSerial() {
@@ -58,9 +64,16 @@ public class TangoSerial extends RosActivity {
     protected void init(NodeMainExecutor nodeMainExecutor) {
         VioNode vioNode = new VioNode(mVinsServiceHelper);
         VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver);
+        NodeConfiguration nodeConfiguration;
 
-        NodeConfiguration nodeConfiguration =
-                NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
+
+        if (getMasterUri().getHost().equals(Address.LOOPBACK)) {
+            nodeConfiguration = NodeConfiguration.newPrivate();
+        } else {
+            nodeConfiguration =
+                   NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
+        }
+
         nodeConfiguration.setMasterUri(getMasterUri());
         nodeMainExecutor.execute(vioNode, nodeConfiguration);
         nodeMainExecutor.execute(vioListenerNode, nodeConfiguration);
