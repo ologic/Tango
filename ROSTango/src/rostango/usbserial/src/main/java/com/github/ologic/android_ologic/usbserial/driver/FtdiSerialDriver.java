@@ -725,7 +725,11 @@ public class FtdiSerialDriver extends CommonUsbSerialDriver {
 
 	public static Map<Integer, int[]> getSupportedDevices() {
 		final Map<Integer, int[]> supportedDevices = new LinkedHashMap<Integer, int[]>();
-		supportedDevices.put(Integer.valueOf(UsbId.VENDOR_FTDI), new int[] { UsbId.FTDI_FT232R, });
+		supportedDevices.put(Integer.valueOf(UsbId.VENDOR_FTDI),
+                new int[] {
+                        UsbId.FTDI_FT232R,
+                        UsbId.FTDI_FT231X,
+                });
 		return supportedDevices;
 	}
 
