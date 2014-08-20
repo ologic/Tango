@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.WindowManager;
 // import android.widget.Toast;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
@@ -58,6 +59,7 @@ public class TangoSerial extends RosActivity {
         /* Read VIO data from VINs service helper */
         mVinsServiceHelper = new VinsServiceHelper(this);
         setContentView(R.layout.main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
