@@ -1,6 +1,7 @@
 package com.ologicinc.rostango.tango_serial;
 
 import android.util.Log;
+import android.widget.TextView;
 
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
@@ -26,6 +27,7 @@ import com.MAVLink.Messages.enums.*;
 /**
  * Created by brandonb on 8/4/14.
  */
+
 public class VioListenerNode implements NodeMain {
 
     private static final boolean DEBUG = true;
@@ -39,8 +41,10 @@ public class VioListenerNode implements NodeMain {
 
     private TangoHeartbeat mHeartbeat;
 
-    public VioListenerNode(UsbSerialDriver serialDriver) {
+    private TextView mStatsView;
 
+    public VioListenerNode(UsbSerialDriver serialDriver, TextView stats) {
+        mStatsView = stats;
         mSerialDriver = serialDriver;
     }
 
@@ -61,18 +65,20 @@ public class VioListenerNode implements NodeMain {
         mSubscriber = connectedNode.newSubscriber("/tango_pose", PoseStamped._TYPE);
 
         mSubscriber.addMessageListener(new MessageListener<PoseStamped>() {
+            int count = 0;
             @Override
             public void onNewMessage(PoseStamped message) {
                 if (DEBUG) Log.d(TAG, message.toString());
                 String quat;
                 String pos;
 
+
                 msg_vision_position_estimate mavLinkVision = new msg_vision_position_estimate();
                 // ?? needed ?? mavLinkVision.sysid = 100;
                 // ?? needed ?? mavLinkVision.compid = 50;
                 mavLinkVision.x = (float)message.getPose().getPosition().getX();
                 mavLinkVision.y = (float)message.getPose().getPosition().getY();
-                mavLinkVision.z = (float)message.getPose().getPosition().getZ();
+                mavLinkVision.z = ((float)message.getPose().getPosition().getZ()) * (-1);   //Changed orientation to match with NED
 
                 mavLinkVision.pitch = 0.0f;
                 mavLinkVision.roll = 0.0f;
@@ -84,20 +90,34 @@ public class VioListenerNode implements NodeMain {
                 MAVLinkPacket mavPacket = mavLinkVision.pack();
                 sendMavMessage(mavPacket);
 
+                if (count== 2)
+                {
+                    pos = String.format("\npos: x: %.4f, y: %.4f, z: %.4f\n",
+                            mavLinkVision.x,
+                            mavLinkVision.y,
+                            mavLinkVision.z);
+
+                    quat = String.format("quat: x: %.4f, y: %.4f, z: %.4f, w: %.4f\n",
+                            message.getPose().getOrientation().getX(),
+                            message.getPose().getOrientation().getY(),
+                            message.getPose().getOrientation().getZ(),
+                            message.getPose().getOrientation().getW()
+                        );
+                    final String statsDump = pos + "\n\n" + quat;
+                    mStatsView.post(new Runnable(){
+
+                        @Override
+                        public void run() {
+                            mStatsView.setText(statsDump);
+                        }
+                    });
+                        count=0;
+                }
+                count++;
+
+
 
                 /*
-                pos = String.format("\npos: x: %.4f, y: %.4f, z: %.4f\n",
-                        message.getPose().getPosition().getX(),
-                        message.getPose().getPosition().getY(),
-                        message.getPose().getPosition().getZ());
-
-                quat = String.format("quat: x: %.4f, y: %.4f, z: %.4f, w: %.4f\n",
-                        message.getPose().getOrientation().getX(),
-                        message.getPose().getOrientation().getY(),
-                        message.getPose().getOrientation().getZ(),
-                        message.getPose().getOrientation().getW()
-                        );
-
 
                 byte[] pos_byte = pos.getBytes(Charset.forName("UTF-8"));
                 byte[] quat_byte = quat.getBytes(Charset.forName("UTF-8"));

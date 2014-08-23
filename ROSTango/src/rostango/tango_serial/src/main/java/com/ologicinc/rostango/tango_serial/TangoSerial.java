@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.TextView;
 // import android.widget.Toast;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
@@ -47,6 +48,7 @@ public class TangoSerial extends RosActivity {
 
     private static final boolean DEBUG = true;
     private static final String TAG = TangoSerial.class.getSimpleName();
+    private TextView mStatsView;
 
 
     public TangoSerial() {
@@ -59,13 +61,14 @@ public class TangoSerial extends RosActivity {
         /* Read VIO data from VINs service helper */
         mVinsServiceHelper = new VinsServiceHelper(this);
         setContentView(R.layout.main);
+        mStatsView = (TextView) findViewById(R.id.stats);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
         VioNode vioNode = new VioNode(mVinsServiceHelper);
-        VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver);
+        VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver, mStatsView);
         NodeConfiguration nodeConfiguration;
 
 
