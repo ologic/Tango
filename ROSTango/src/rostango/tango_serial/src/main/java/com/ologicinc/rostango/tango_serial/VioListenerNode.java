@@ -76,7 +76,7 @@ public class VioListenerNode implements NodeMain {
                 msg_vision_position_estimate mavLinkVision = new msg_vision_position_estimate();
                 // ?? needed ?? mavLinkVision.sysid = 100;
                 // ?? needed ?? mavLinkVision.compid = 50;
-                mavLinkVision.x = (float)message.getPose().getPosition().getX();
+                mavLinkVision.x = (float)message.getPose().getPosition().getX() * (-1);     //Changed orientation to match with NED
                 mavLinkVision.y = (float)message.getPose().getPosition().getY();
                 mavLinkVision.z = ((float)message.getPose().getPosition().getZ()) * (-1);   //Changed orientation to match with NED
 
