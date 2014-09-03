@@ -177,7 +177,7 @@ public class VioListenerNode implements NodeMain {
 
                 mavLinkVision.pitch = e.pitch *(-1);
                 mavLinkVision.roll = e.roll;
-                mavLinkVision.yaw = e.yaw *(-1) + (float)Math.PI;
+                mavLinkVision.yaw = e.yaw + (float)Math.PI;
 
                 if (mavLinkVision.yaw > Math.PI) {
                     mavLinkVision.yaw -= 2.0 * Math.PI;
