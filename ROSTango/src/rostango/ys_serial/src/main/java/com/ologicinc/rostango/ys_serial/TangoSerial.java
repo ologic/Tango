@@ -25,8 +25,9 @@ import android.widget.TextView;
 // import android.widget.Toast;
 
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
+import com.google.atap.tangoservice.Tango;
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
-import com.ologicinc.rostango.TangoNodes.vio.VioNode;
+import com.ologicinc.rostango.TangoNodes.vio.YSVioNode;
 
 import org.ros.address.Address;
 import org.ros.address.InetAddressFactory;
@@ -37,7 +38,7 @@ import org.ros.node.NodeMainExecutor;
 
 
 public class TangoSerial extends RosActivity {
-    private VinsServiceHelper  mVinsServiceHelper;
+    // XXX private VinsServiceHelper  mVinsServiceHelper;
 
     // USB serial communication.
     // Driver instance, passed in statically via show(Context, UsbSerialDriver).
@@ -50,6 +51,8 @@ public class TangoSerial extends RosActivity {
     private static final String TAG = TangoSerial.class.getSimpleName();
     private TextView mStatsView;
 
+    private Tango mTango;
+
 
     public TangoSerial() {
         super("TangoSerial", "TangoSerial");
@@ -59,15 +62,18 @@ public class TangoSerial extends RosActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* Read VIO data from VINs service helper */
-        mVinsServiceHelper = new VinsServiceHelper(this);
+        // XXX mVinsServiceHelper = new VinsServiceHelper(this);
         setContentView(R.layout.main);
         mStatsView = (TextView) findViewById(R.id.stats);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Instantiate the Tango service
+        mTango = new Tango(this);
     }
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        VioNode vioNode = new VioNode(mVinsServiceHelper);
+        YSVioNode vioNode = new YSVioNode(mTango);
         VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver, mStatsView);
         NodeConfiguration nodeConfiguration;
 
