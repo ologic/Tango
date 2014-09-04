@@ -67,7 +67,8 @@ public class TangoSerial extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        VioNode vioNode = new VioNode(mVinsServiceHelper);
+        VioNode vioNode = new VioNode(this);
+        vioNode.setVinsServiceHelper(mVinsServiceHelper);
         VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver, mStatsView);
         NodeConfiguration nodeConfiguration;
 
