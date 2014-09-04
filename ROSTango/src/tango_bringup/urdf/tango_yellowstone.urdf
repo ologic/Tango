@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot name="tango_yellowstone">
+  <link name="phone">
+    <visual>
+      <!-- <origin xyz="0 0 0" rpy="3.14 0 1.57 " /> -->
+      <origin xyz="-1.0 -1.0 0" rpy="0 0 0" /> -->
+      <geometry>
+        <mesh filename="package://tango_bringup/urdf/tango_yellowstone.dae"
+          scale="0.01 0.01 0.01" />
+      </geometry>
+      <material name="grey">
+        <color rgba="0.1 0.1 .5 1"/>
+      </material>
+    </visual>
+  </link>
+</robot>
+
