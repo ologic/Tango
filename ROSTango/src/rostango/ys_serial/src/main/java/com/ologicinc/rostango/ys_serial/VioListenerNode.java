@@ -175,15 +175,17 @@ public class VioListenerNode implements NodeMain {
                 MavLinkEuler e = new MavLinkEuler();
                 mavlink_quaternion_to_euler(q, e);
 
-                mavLinkVision.pitch = e.pitch *(-1);
-                mavLinkVision.roll = e.roll;
-                mavLinkVision.yaw = e.yaw + (float)Math.PI;
+                mavLinkVision.pitch = -e.pitch;
+                mavLinkVision.roll = -e.roll;
+                mavLinkVision.yaw = -e.yaw;  //+ (float)Math.PI;
 
+                /*
                 if (mavLinkVision.yaw > Math.PI) {
                     mavLinkVision.yaw -= 2.0 * Math.PI;
                 } else if (mavLinkVision.yaw <-Math.PI) {
                     mavLinkVision.yaw += 2.0 * Math.PI;
                 }
+                */
 
 
                 long lt = System.currentTimeMillis() * 1000;

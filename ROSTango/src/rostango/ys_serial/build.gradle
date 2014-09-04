@@ -46,7 +46,7 @@ dependencies {
     compile project(':usbserial')
     compile project(':Mavlink')
     /* org/ros/tf2/tf2_ros/0.0.0-SNAPSHOT/tf2_ros-0.0.0-20140618.182828-2.aar */
-    compile files('libs/android-support-v4.jar')
+    // compile files('libs/android-support-v4.jar')
     compile files('libs/tango_native_service_client_helperlib.jar')
 }
 

@@ -92,7 +92,7 @@ public class YSVioNode implements NodeMain {
                // XXX final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
                // XXX final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
 
-               mTango.getPoseAtTime((double)0.0, framePairs.get(0), pose);
+               mTango.getPoseAtTime(0.0, framePairs.get(0), pose);
 
                // Generate the TF message
 
@@ -130,9 +130,9 @@ public class YSVioNode implements NodeMain {
         // XXX mTangoPosePublisher.setPoint(state[5],-state[4], state[6]);
         // XXX mTangoTfPublisher.setTranslation(state[5],-state[4], state[6]);
 
-        mTangoOdomPublisher.setPosePoint(pose.translation[0],pose.translation[1], pose.translation[2]);
-        mTangoPosePublisher.setPoint(pose.translation[0],pose.translation[1], pose.translation[2]);
-        mTangoTfPublisher.setTranslation(pose.translation[0],pose.translation[1], pose.translation[2]);
+        mTangoOdomPublisher.setPosePoint(-pose.translation[1],pose.translation[0], pose.translation[2]);
+        mTangoPosePublisher.setPoint(-pose.translation[1],pose.translation[0], pose.translation[2]);
+        mTangoTfPublisher.setTranslation(-pose.translation[1],pose.translation[0], pose.translation[2]);
     }
 
     public void updateRoataion(TangoPoseData pose) {
