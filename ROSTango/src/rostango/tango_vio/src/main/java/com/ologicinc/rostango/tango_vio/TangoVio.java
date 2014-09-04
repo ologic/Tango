@@ -21,6 +21,7 @@ import android.os.Bundle;
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
 import com.ologicinc.rostango.TangoNodes.vio.VioNode;
 
+import org.ros.address.Address;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
@@ -44,10 +45,20 @@ public class TangoVio extends RosActivity {
 
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor) {
-        VioNode vioNode = new VioNode(mVinsServiceHelper);
+        NodeConfiguration nodeConfiguration;
+        // XXX VioNode vioNode = new VioNode(mVinsServiceHelper);
+        VioNode vioNode = new VioNode(this);
 
-        NodeConfiguration nodeConfiguration =
-                NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
+        // Required for Peanut support
+        vioNode.setVinsServiceHelper(mVinsServiceHelper);
+
+        if (getMasterUri().getHost().equals(Address.LOOPBACK)) {
+            nodeConfiguration = NodeConfiguration.newPrivate();
+        } else {
+            nodeConfiguration =
+                    NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
+        }
+
         nodeConfiguration.setMasterUri(getMasterUri());
         nodeMainExecutor.execute(vioNode, nodeConfiguration);
     }

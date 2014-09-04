@@ -23,6 +23,8 @@ import com.MAVLink.Messages.*;
 import com.MAVLink.Messages.ardupilotmega.*;
 import com.MAVLink.Messages.enums.*;
 
+import com.ologicinc.rostango.TangoNodes.vio.VioNode;
+
 class MavLinkEuler {
     public float roll;
     public float pitch;
@@ -51,10 +53,12 @@ public class VioListenerNode implements NodeMain {
     private TangoHeartbeat mHeartbeat;
 
     private TextView mStatsView;
+    private int mModel;
 
-    public VioListenerNode(UsbSerialDriver serialDriver, TextView stats) {
+    public VioListenerNode(UsbSerialDriver serialDriver, TextView stats, int deviceModel) {
         mStatsView = stats;
         mSerialDriver = serialDriver;
+        mModel = deviceModel;
     }
 
     @Override
@@ -175,14 +179,27 @@ public class VioListenerNode implements NodeMain {
                 MavLinkEuler e = new MavLinkEuler();
                 mavlink_quaternion_to_euler(q, e);
 
-                mavLinkVision.pitch = e.pitch *(-1);
-                mavLinkVision.roll = e.roll;
-                mavLinkVision.yaw = e.yaw + (float)Math.PI;
+                if (mModel == VioNode.PEANUT) {
 
-                if (mavLinkVision.yaw > Math.PI) {
-                    mavLinkVision.yaw -= 2.0 * Math.PI;
-                } else if (mavLinkVision.yaw <-Math.PI) {
-                    mavLinkVision.yaw += 2.0 * Math.PI;
+                    mavLinkVision.pitch = e.pitch * (-1);
+                    mavLinkVision.roll = e.roll;
+                    mavLinkVision.yaw = -(e.yaw + (float) Math.PI);
+
+                    if (mavLinkVision.yaw > Math.PI) {
+                        mavLinkVision.yaw -= 2.0 * Math.PI;
+                    } else if (mavLinkVision.yaw < -Math.PI) {
+                        mavLinkVision.yaw += 2.0 * Math.PI;
+                    }
+                }
+
+                if (mModel == VioNode.YELLOWSTONE) {
+                    float tempX = -mavLinkVision.x;
+                    mavLinkVision.x = mavLinkVision.y;
+                    mavLinkVision.y = tempX;
+
+                    mavLinkVision.pitch = -e.pitch;
+                    mavLinkVision.roll = -e.roll;
+                    mavLinkVision.yaw = -e.yaw;  //+ (float)Math.PI;
                 }
 
 

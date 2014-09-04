@@ -24,19 +24,57 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 
-/**
- * Created by rohan on 7/8/14.
- */
+
+/* yellowstone api */
+import com.google.atap.tangoservice.Tango;
+import com.google.atap.tangoservice.TangoConfig;
+import com.google.atap.tangoservice.TangoEvent;
+import com.google.atap.tangoservice.TangoPoseData;
+import com.google.atap.tangoservice.TangoXyzIjData;
+import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
+import com.google.atap.tangoservice.TangoCoordinateFramePair;
+
+import android.content.Context;
+import android.util.Log;
+
+import java.util.ArrayList;
+
+
 public class VioNode implements NodeMain {
 
+    private static String TAG = VioNode.class.getSimpleName();
+
     private VinsServiceHelper mVinsServiceHelper;
+
+    private Tango mTango;
+    private TangoConfig mConfig;
+    private TangoCoordinateFramePair mFramePairs;
+    private TangoPoseData mPose;
 
     private TangoOdomPublisher mTangoOdomPublisher;
     private TangoPosePublisher mTangoPosePublisher;
     private TangoTfPublisher mTangoTfPublisher;
 
-    public VioNode(VinsServiceHelper vins){
-        mVinsServiceHelper = vins;
+    public static final int PEANUT = 0;
+    public static final int YELLOWSTONE = 1;
+
+    private int mModel;
+
+
+    public VioNode(Context context) {
+
+        Log.i(TAG, "Build.MODEL="+android.os.Build.MODEL);
+
+        if (android.os.Build.MODEL.equals("Yellowstone")) {
+            // Instantiate the Yellowstone Tango service
+            mTango = new Tango(context);
+            mModel = YELLOWSTONE;
+            Log.i(TAG, "YELLOWSTONE device");
+        } else if (android.os.Build.MODEL.equals("Peanut")) {
+            mVinsServiceHelper = new VinsServiceHelper((android.app.Activity)context);
+            mModel = PEANUT;
+            Log.i(TAG, "PEANUT device");
+        }
     }
 
     @Override
@@ -44,8 +82,42 @@ public class VioNode implements NodeMain {
         return GraphName.of("tango_vio");
     }
 
+    public void setVinsServiceHelper(VinsServiceHelper vins) {
+        if (mModel == PEANUT) {
+            mVinsServiceHelper = vins;
+        }
+    }
+
+    public int getModel() {
+        return mModel;
+    }
+
+    private void startYellowstone() {
+        // Create a new Tango Configuration and enable the MotionTracking API
+        mConfig = new TangoConfig();
+        mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT, mConfig);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORESET, false);
+
+        // Lock configuration and connect to Tango
+        mTango.lockConfig(mConfig);
+        mTango.connect();
+
+        mPose = new TangoPoseData();
+
+        // Select coordinate frame pairs
+        mFramePairs = new TangoCoordinateFramePair(
+                TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
+                TangoPoseData.COORDINATE_FRAME_DEVICE);
+    }
+
     @Override
     public void onStart(ConnectedNode node) {
+
+        if (mModel==YELLOWSTONE) {
+            startYellowstone();
+        }
+
         mTangoOdomPublisher = new TangoOdomPublisher(node);
         mTangoPosePublisher = new TangoPosePublisher(node);
         mTangoTfPublisher = new TangoTfPublisher(node);
@@ -53,16 +125,31 @@ public class VioNode implements NodeMain {
         node.executeCancellableLoop(new CancellableLoop() {
            @Override
             protected void loop() throws InterruptedException {
-               Thread.sleep(30);
-               final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
-               final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
-               // Generate the TF message
 
-               updateTranslation(posState);
-               Thread.sleep(30);
+               if (mModel==PEANUT) {
+                   Thread.sleep(30);
+                   final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
+                   final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
+                   // Generate the TF message
 
-               updateRoataion(rotState);
-               Thread.sleep(30);
+                   updateTranslation(posState);
+                   Thread.sleep(30);
+
+                   updateRotation(rotState);
+                   Thread.sleep(30);
+               }
+
+               if (mModel==YELLOWSTONE) {
+                   Thread.sleep(30);
+                   mTango.getPoseAtTime(0.0, mFramePairs, mPose);
+
+                   // Generate the TF message
+                   updateYSTranslation(mPose);
+                   Thread.sleep(30);
+
+                   updateYSRotation(mPose);
+                   Thread.sleep(30);
+               }
 
                mTangoOdomPublisher.publishOdom();
                mTangoPosePublisher.publishPose();
@@ -73,7 +160,14 @@ public class VioNode implements NodeMain {
 
     @Override
     public void onShutdown(Node node) {
-        mVinsServiceHelper.shutdown();
+        if (mModel==PEANUT) {
+            mVinsServiceHelper.shutdown();
+        }
+
+        if (mModel==YELLOWSTONE) {
+            mTango.unlockConfig();
+            mTango.disconnect();
+        }
     }
 
     @Override
@@ -84,15 +178,27 @@ public class VioNode implements NodeMain {
     public void onError(Node node, Throwable throwable) {
     }
 
-    public void updateTranslation(double[] state) {
+    private void updateTranslation(double[] state) {
         mTangoOdomPublisher.setPosePoint(state[5],-state[4], state[6]);
         mTangoPosePublisher.setPoint(state[5],-state[4], state[6]);
         mTangoTfPublisher.setTranslation(state[5],-state[4], state[6]);
     }
 
-    public void updateRoataion(double[] state) {
+    private void updateRotation(double[] state) {
         mTangoOdomPublisher.setPoseQuat(-state[2], state[0], -state[1], state[3]);
         mTangoPosePublisher.setQuat(-state[2],state[0],-state[1],state[3]);
         mTangoTfPublisher.setRotation(-state[2],state[0],-state[1],state[3]);
+    }
+
+    private void updateYSTranslation(TangoPoseData pose) {
+        mTangoOdomPublisher.setPosePoint(pose.translation[0],pose.translation[1], pose.translation[2]);
+        mTangoPosePublisher.setPoint(pose.translation[0],pose.translation[1], pose.translation[2]);
+        mTangoTfPublisher.setTranslation(pose.translation[0],pose.translation[1], pose.translation[2]);
+    }
+
+    private void updateYSRotation(TangoPoseData pose) {
+        mTangoOdomPublisher.setPoseQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
+        mTangoPosePublisher.setQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
+        mTangoTfPublisher.setRotation(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
     }
 }
