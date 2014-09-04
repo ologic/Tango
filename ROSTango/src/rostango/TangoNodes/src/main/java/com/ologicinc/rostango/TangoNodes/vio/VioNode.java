@@ -55,8 +55,8 @@ public class VioNode implements NodeMain {
     private TangoPosePublisher mTangoPosePublisher;
     private TangoTfPublisher mTangoTfPublisher;
 
-    private static final int PEANUT = 0;
-    private static final int YELLOWSTONE = 1;
+    public static final int PEANUT = 0;
+    public static final int YELLOWSTONE = 1;
 
     private int mModel;
 
@@ -86,6 +86,10 @@ public class VioNode implements NodeMain {
         if (mModel == PEANUT) {
             mVinsServiceHelper = vins;
         }
+    }
+
+    public int getModel() {
+        return mModel;
     }
 
     private void startYellowstone() {
@@ -187,9 +191,9 @@ public class VioNode implements NodeMain {
     }
 
     private void updateYSTranslation(TangoPoseData pose) {
-        mTangoOdomPublisher.setPosePoint(-pose.translation[1],pose.translation[0], pose.translation[2]);
-        mTangoPosePublisher.setPoint(-pose.translation[1],pose.translation[0], pose.translation[2]);
-        mTangoTfPublisher.setTranslation(-pose.translation[1],pose.translation[0], pose.translation[2]);
+        mTangoOdomPublisher.setPosePoint(pose.translation[0],pose.translation[1], pose.translation[2]);
+        mTangoPosePublisher.setPoint(pose.translation[0],pose.translation[1], pose.translation[2]);
+        mTangoTfPublisher.setTranslation(pose.translation[0],pose.translation[1], pose.translation[2]);
     }
 
     private void updateYSRotation(TangoPoseData pose) {
