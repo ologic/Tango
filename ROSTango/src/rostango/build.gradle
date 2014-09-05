@@ -27,7 +27,8 @@ buildscript {
                 url p
             }
         }
-        mavenLocal()
+        mavenCentral() // Added by Shiloh, 9/2/2014
+        // mavenLocal() // Removed by Shiloh, 9/2/2014
         maven {
             url rosMavenRepository
         }
@@ -52,3 +53,4 @@ subprojects {
        to see what is going on under the hood. */
     apply plugin: 'ros-android'
 }
+

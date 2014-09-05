@@ -43,6 +43,9 @@ dependencies {
 apply plugin: 'android'
 
 android {
+    lintOptions {
+        abortOnError false
+    }
     packagingOptions {
         /* https://github.com/rosjava/android_core/issues/194 */
         exclude 'META-INF/LICENSE.txt'
