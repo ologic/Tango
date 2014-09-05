@@ -26,7 +26,6 @@ include 'TangoNodes'
 include 'tango_pub'
 include 'usbserial'
 include 'tango_serial'
-include 'ys_serial'
 include 'Mavlink'
 
 
