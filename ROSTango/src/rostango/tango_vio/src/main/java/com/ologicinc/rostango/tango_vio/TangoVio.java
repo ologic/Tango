@@ -20,6 +20,7 @@ import android.os.Bundle;
 
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
 import com.ologicinc.rostango.TangoNodes.vio.VioNode;
+import com.ologicinc.rostango.TangoNodes.vio.VioDepthNode; // depth
 
 import org.ros.address.Address;
 import org.ros.address.InetAddressFactory;
@@ -47,7 +48,8 @@ public class TangoVio extends RosActivity {
     protected void init(NodeMainExecutor nodeMainExecutor) {
         NodeConfiguration nodeConfiguration;
         // XXX VioNode vioNode = new VioNode(mVinsServiceHelper);
-        VioNode vioNode = new VioNode(this);
+        //VioNode vioNode = new VioNode(this);
+        VioDepthNode vioNode = new VioDepthNode(this); // Use both vio and depth
 
         // Required for Peanut support
         vioNode.setVinsServiceHelper(mVinsServiceHelper);

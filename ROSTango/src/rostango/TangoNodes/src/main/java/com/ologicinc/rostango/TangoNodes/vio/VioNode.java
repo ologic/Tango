@@ -48,7 +48,8 @@ public class VioNode implements NodeMain {
 
     private Tango mTango;
     private TangoConfig mConfig;
-    private TangoCoordinateFramePair mFramePairs;
+    //private TangoCoordinateFramePair mFramePairs;
+    private ArrayList<TangoCoordinateFramePair> mFramePairs;
     private TangoPoseData mPose;
 
     private TangoOdomPublisher mTangoOdomPublisher;
@@ -106,9 +107,31 @@ public class VioNode implements NodeMain {
         mPose = new TangoPoseData();
 
         // Select coordinate frame pairs
-        mFramePairs = new TangoCoordinateFramePair(
+        mFramePairs = new ArrayList<TangoCoordinateFramePair>();
+        mFramePairs.add(new TangoCoordinateFramePair(
                 TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                TangoPoseData.COORDINATE_FRAME_DEVICE);
+                TangoPoseData.COORDINATE_FRAME_DEVICE)
+        );
+
+        // Tango vio data ought to be updated using the Update Listener instead of
+        // getPoseAtTime(), for which no depth equivalent exists.
+        mTango.connectListener(mFramePairs, new OnTangoUpdateListener() {
+
+            @Override
+            public void onPoseAvailable(final TangoPoseData pose) {
+
+            }
+
+            @Override
+            public void onXyzIjAvailable(final TangoXyzIjData xyzIj) {
+
+            }
+
+            @Override
+            public void onTangoEvent(TangoEvent arg0) {
+
+            }
+        });
     }
 
     @Override
@@ -141,7 +164,7 @@ public class VioNode implements NodeMain {
 
                if (mModel==YELLOWSTONE) {
                    Thread.sleep(30);
-                   mTango.getPoseAtTime(0.0, mFramePairs, mPose);
+                   mTango.getPoseAtTime(0.0, mFramePairs.get(0), mPose);
 
                    // Generate the TF message
                    updateYSTranslation(mPose);
