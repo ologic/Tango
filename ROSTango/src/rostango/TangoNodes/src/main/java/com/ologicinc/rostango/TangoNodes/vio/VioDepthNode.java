@@ -24,14 +24,10 @@ import com.google.atap.tangoservice.TangoCoordinateFramePair;
 import android.content.Context;
 import android.util.Log;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.nio.FloatBuffer;
 
 import com.ologicinc.rostango.TangoNodes.depth.*;
-import java.nio.FloatBuffer; // debug
-import android.os.ParcelFileDescriptor;
-import android.os.Parcel;
-import java.io.FileDescriptor;
 
 public class VioDepthNode implements NodeMain {
 
@@ -41,16 +37,14 @@ public class VioDepthNode implements NodeMain {
 
     private Tango mTango;
     private TangoConfig mConfig;
-    //private TangoCoordinateFramePair mFramePairs;
     private ArrayList<TangoCoordinateFramePair> mFramePairs;
-    private TangoPoseData mPose;
-    private TangoXyzIjData mTangoXyzIjData;
     private OnTangoUpdateListener mTangoUpdateListener;
 
     private TangoOdomPublisher mTangoOdomPublisher;
     private TangoPosePublisher mTangoPosePublisher;
     private TangoTfPublisher mTangoTfPublisher;
-    private DepthPublisher mDepthPublisher;
+    //private DepthPublisher mDepthPublisher;
+    private PointCloudPublisher mPointCloudPublisher;
 
     public static final int PEANUT = 0;
     public static final int YELLOWSTONE = 1;
@@ -113,25 +107,16 @@ public class VioDepthNode implements NodeMain {
             }
         }
 
-        /*
-        while (mTango.connect() != Tango.STATUS_SUCCESS) {
-            System.out.println("Could not connect to Tango");
-        }
-        */
-
-        mPose = new TangoPoseData();
-
-        System.out.println("mTango configured, mPose initialized");
-
         // Select coordinate frame pairs
         mFramePairs = new ArrayList<TangoCoordinateFramePair>();
         mFramePairs.add(new TangoCoordinateFramePair(
                 TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
-                TangoPoseData.COORDINATE_FRAME_DEVICE));
+                TangoPoseData.COORDINATE_FRAME_DEVICE)
+        );
 
-        System.out.println("mFramePairs initialized");
+        System.out.println("Coordinate frame pairs initialized");
 
-        mTangoUpdateListener = new OnTangoUpdateListener() {
+        OnTangoUpdateListener tangoUpdateListener = new OnTangoUpdateListener() {
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
@@ -158,16 +143,7 @@ public class VioDepthNode implements NodeMain {
 
             }
         };
-
-        mTango.connectListener(mFramePairs, mTangoUpdateListener);
-
-        mTangoXyzIjData = new TangoXyzIjData();
-    }
-
-    public void debugStartYellowstone() {
-        if (mModel==YELLOWSTONE) {
-            //startYellowstone();
-        }
+        mTango.connectListener(mFramePairs, tangoUpdateListener);
     }
 
     @Override
@@ -182,65 +158,31 @@ public class VioDepthNode implements NodeMain {
         mTangoOdomPublisher = new TangoOdomPublisher(node);
         mTangoPosePublisher = new TangoPosePublisher(node);
         mTangoTfPublisher = new TangoTfPublisher(node);
-        mDepthPublisher = new DepthPublisher(node);
+        //mDepthPublisher = new DepthPublisher(node);
+        mPointCloudPublisher = new PointCloudPublisher(node);
 
-        node.executeCancellableLoop(new CancellableLoop() {
-            @Override
-            protected void loop() throws InterruptedException {
+        if (mModel==PEANUT) {
+            node.executeCancellableLoop(new CancellableLoop() {
+                @Override
+                protected void loop() throws InterruptedException {
 
-                if (mModel==PEANUT) {
                     Thread.sleep(30);
                     final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
                     final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
-                    // Generate the TF message
 
+                    // Generate the TF message
                     updateTranslation(posState);
                     Thread.sleep(30);
 
                     updateRotation(rotState);
                     Thread.sleep(30);
+
+                    mTangoOdomPublisher.publishOdom();
+                    mTangoPosePublisher.publishPose();
+                    mTangoTfPublisher.publishTransforms();
                 }
-
-                if (mModel==YELLOWSTONE) {
-
-                    /*
-                    Thread.sleep(30);
-                    mTango.getPoseAtTime(0.0, mFramePairs.get(0), mPose); // keeps producing DeadObjectException
-
-                    // Generate the TF message
-                    updateYSTranslation(mPose);
-                    Thread.sleep(30);
-
-                    updateYSRotation(mPose);
-                    Thread.sleep(30);
-                    */
-
-                    //mTango.getPoseAtTime(0.0, mFramePairs.get(0), mPose);
-                    //System.out.println("getPoseAtTime can read pose data");
-
-                    //mTangoUpdateListener.onPoseAvailable(mPose);
-                    //mTangoUpdateListener.onXyzIjAvailable(mTangoXyzIjData);
-
-                    // This is silly.  TangoXyzIjData has perfectly good methods for this, the problem
-                    // is that there's no depth data being stuck in there.  There doesn't seem to be
-                    // an equivalent of Tango.getPoseAtTime() for depth data, so I have to use the
-                    // OnTangoUpdateListener thing.  Which isn't working.  Joy.
-                    //ParcelFileDescriptor xyz = mTangoXyzIjData.xyzParcelFileDescriptor;
-                    //FileDescriptor f = mTangoXyzIjData.xyzParcelFileDescriptor.getFileDescriptor();
-                    //FileInputStream fs = new FileInputStream(mTangoXyzIjData.xyzParcelFileDescriptor.getFileDescriptor());
-                    //fs.read(xyz, 0, mTangoXyzIjData.getXyzBuffer().limit());
-
-                    //mTango.connectListener(mFramePairs, mTangoUpdateListener);
-
-                    //updateYSDepth(mTangoXyzIjData);
-                    //Thread.sleep(30); // not sure about this bit
-                }
-
-                //mTangoOdomPublisher.publishOdom(); // I guess for Peanut these should still happen down here.
-                //mTangoPosePublisher.publishPose(); // FIXME:  Make sure this is still Peanut-compatible for vio-only
-                //mTangoTfPublisher.publishTransforms();
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -257,6 +199,20 @@ public class VioDepthNode implements NodeMain {
 
     @Override
     public void onShutdownComplete(Node node) {
+    }
+
+    public void onPause() {
+        mTango.unlockConfig();
+        mTango.disconnect();
+    }
+
+    public void onResume() {
+        mTango.lockConfig(mConfig);
+        mTango.connect();
+    }
+
+    public void onDestroy() {
+        mTango.unlockConfig();
     }
 
     @Override
@@ -291,24 +247,51 @@ public class VioDepthNode implements NodeMain {
 
     private void updateYSDepth(TangoXyzIjData xyzIj) {
         System.out.println("Processing depth data");
-        /*try {
-            FloatBuffer f = xyzIj.getXyzBuffer();
-        } catch (NullPointerException e) {
-            System.out.println("sorry about that");
-            return;
-        }*/
 
-        int[] data = new int[xyzIj.getXyzBuffer().limit()];
-        //data[0] = (int)(xyzIj.getXyzBuffer().get(0));
-        for (int i = 0; i < xyzIj.getXyzBuffer().limit(); i++) {
-            float x = xyzIj.getXyzBuffer().get(i);//array()[i];//get();
-            if (x != 0.0) {
-                System.out.println(x);
-            }
-            data[i] = (int)x;//yzIj.getXyzBuffer().get();
+        /*
+        FloatBuffer depth_buf = xyzIj.getXyzBuffer().duplicate();
+
+        int[] db = new int[depth_buf.limit()];
+        int[] data = new int[57600];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = -1;
         }
 
+        //System.out.println(depth_buf.limit());
+        //System.out.println(xyzIj.ijCols);
+        //System.out.println(xyzIj.ijRows);
 
-        mDepthPublisher.onNewRawImage(data, xyzIj.ijCols, xyzIj.ijRows);
+        int d = 0;
+        while (depth_buf.hasRemaining()) {
+            float xyz = depth_buf.get();
+            //System.out.println(depth_buf.position() + " -> " + xyz);
+            db[d] = (int)(xyz*1000);
+            //i+= 3;
+            d++;
+        }
+        for (int i = 0; i < depth_buf.limit(); i += 3) {
+            int x = Math.abs(db[i] / 10);
+            int y = Math.abs(db[i+1] / 10);
+            int z = db[i+2];
+            data[y*320 + x] = z;
+            if (z == 255) {
+                System.out.println(z);
+            }
+        }
+*/
+        FloatBuffer xyzBuffer = xyzIj.getXyzBuffer().duplicate();
+        float[] data = new float[xyzBuffer.limit()];
+
+        int d = 0;
+        while (xyzBuffer.hasRemaining()) {
+            data[d] = xyzBuffer.get();
+            d++;
+        }
+
+        System.out.println(data[20]);
+
+        mPointCloudPublisher.onNewPointCloud(data);
+
+        //mDepthPublisher.onNewRawImage(data, 320, 180);//xyzIj.ijCols, xyzIj.ijRows);
     }
 }

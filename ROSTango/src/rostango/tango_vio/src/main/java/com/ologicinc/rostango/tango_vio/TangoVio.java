@@ -29,9 +29,11 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 public class TangoVio extends RosActivity {
-   private VinsServiceHelper  mVinsServiceHelper;
+    private VinsServiceHelper  mVinsServiceHelper;
+    //private VioNode mVioNode;
+    private VioDepthNode mVioNode;
 
-   public TangoVio() {
+    public TangoVio() {
         super("TangoVio", "TangoVio");
     }
 
@@ -39,7 +41,7 @@ public class TangoVio extends RosActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /* Read VIO data from VINs service helper */
-        mVinsServiceHelper = new VinsServiceHelper(this);
+        //mVinsServiceHelper = new VinsServiceHelper(this);
 
         setContentView(R.layout.main);
     }
@@ -48,11 +50,13 @@ public class TangoVio extends RosActivity {
     protected void init(NodeMainExecutor nodeMainExecutor) {
         NodeConfiguration nodeConfiguration;
         // XXX VioNode vioNode = new VioNode(mVinsServiceHelper);
-        //VioNode vioNode = new VioNode(this);
-        VioDepthNode vioNode = new VioDepthNode(this); // Use both vio and depth
+        mVioNode = new VioDepthNode(this); // Use both vio and depth
 
         // Required for Peanut support
-        vioNode.setVinsServiceHelper(mVinsServiceHelper);
+        if (mVioNode.getModel() == VioNode.PEANUT) {
+            mVinsServiceHelper = new VinsServiceHelper(this);
+            mVioNode.setVinsServiceHelper(mVinsServiceHelper);
+        }
 
         if (getMasterUri().getHost().equals(Address.LOOPBACK)) {
             nodeConfiguration = NodeConfiguration.newPrivate();
@@ -62,7 +66,31 @@ public class TangoVio extends RosActivity {
         }
 
         nodeConfiguration.setMasterUri(getMasterUri());
-        nodeMainExecutor.execute(vioNode, nodeConfiguration);
+        nodeMainExecutor.execute(mVioNode, nodeConfiguration);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mVioNode != null) {
+            mVioNode.onPause();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mVioNode != null) {
+            mVioNode.onResume();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mVioNode != null) {
+            mVioNode.onDestroy();
+        }
     }
 
 }
