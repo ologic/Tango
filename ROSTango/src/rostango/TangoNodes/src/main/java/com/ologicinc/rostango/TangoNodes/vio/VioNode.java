@@ -39,7 +39,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-
 public class VioNode implements NodeMain {
 
     private static String TAG = VioNode.class.getSimpleName();
@@ -48,9 +47,7 @@ public class VioNode implements NodeMain {
 
     private Tango mTango;
     private TangoConfig mConfig;
-    //private TangoCoordinateFramePair mFramePairs;
     private ArrayList<TangoCoordinateFramePair> mFramePairs;
-    private TangoPoseData mPose;
 
     private TangoOdomPublisher mTangoOdomPublisher;
     private TangoPosePublisher mTangoPosePublisher;
@@ -104,8 +101,6 @@ public class VioNode implements NodeMain {
         mTango.lockConfig(mConfig);
         mTango.connect();
 
-        mPose = new TangoPoseData();
-
         // Select coordinate frame pairs
         mFramePairs = new ArrayList<TangoCoordinateFramePair>();
         mFramePairs.add(new TangoCoordinateFramePair(
@@ -117,7 +112,15 @@ public class VioNode implements NodeMain {
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-
+                // Update vio data
+                try {
+                    updateYSTranslation(pose);
+                    updateYSRotation(pose);
+                    mTangoOdomPublisher.publishOdom();
+                    mTangoPosePublisher.publishPose();
+                    mTangoTfPublisher.publishTransforms();
+                } catch (Exception e) {
+                }
             }
 
             @Override
@@ -143,40 +146,28 @@ public class VioNode implements NodeMain {
         mTangoPosePublisher = new TangoPosePublisher(node);
         mTangoTfPublisher = new TangoTfPublisher(node);
 
-        node.executeCancellableLoop(new CancellableLoop() {
-           @Override
-            protected void loop() throws InterruptedException {
+        if (mModel == PEANUT) { // For Yellowstone, OnTangoUpdateListener updates vio data
+            node.executeCancellableLoop(new CancellableLoop() {
+                @Override
+                protected void loop() throws InterruptedException {
 
-               if (mModel==PEANUT) {
-                   Thread.sleep(30);
-                   final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
-                   final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
-                   // Generate the TF message
+                    Thread.sleep(30);
+                    final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
+                    final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
 
-                   updateTranslation(posState);
-                   Thread.sleep(30);
+                    // Generate the TF message
+                    updateTranslation(posState);
+                    Thread.sleep(30);
 
-                   updateRotation(rotState);
-                   Thread.sleep(30);
-               }
+                    updateRotation(rotState);
+                    Thread.sleep(30);
 
-               if (mModel==YELLOWSTONE) {
-                   Thread.sleep(30);
-                   mTango.getPoseAtTime(0.0, mFramePairs.get(0), mPose);
-
-                   // Generate the TF message
-                   updateYSTranslation(mPose);
-                   Thread.sleep(30);
-
-                   updateYSRotation(mPose);
-                   Thread.sleep(30);
-               }
-
-               mTangoOdomPublisher.publishOdom();
-               mTangoPosePublisher.publishPose();
-               mTangoTfPublisher.publishTransforms();
-            }
-        });
+                    mTangoOdomPublisher.publishOdom();
+                    mTangoPosePublisher.publishPose();
+                    mTangoTfPublisher.publishTransforms();
+                }
+            });
+        }
     }
 
     @Override

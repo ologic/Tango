@@ -38,8 +38,6 @@ public class VioDepthNode implements NodeMain {
     private Tango mTango;
     private TangoConfig mConfig;
     private ArrayList<TangoCoordinateFramePair> mFramePairs;
-    //private OnTangoUpdateListener mTangoUpdateListener;
-    private TangoPoseData mPose;
 
     private TangoOdomPublisher mTangoOdomPublisher;
     private TangoPosePublisher mTangoPosePublisher;
@@ -48,8 +46,6 @@ public class VioDepthNode implements NodeMain {
 
     public static final int PEANUT = 0;
     public static final int YELLOWSTONE = 1;
-
-    private static final boolean USE_DEPTH = false;
 
     private int mModel;
 
@@ -106,10 +102,6 @@ public class VioDepthNode implements NodeMain {
             }
         }
 
-        if (!USE_DEPTH) {
-            mPose = new TangoPoseData();
-        }
-
         // Select coordinate frame pairs
         mFramePairs = new ArrayList<TangoCoordinateFramePair>();
         mFramePairs.add(new TangoCoordinateFramePair(
@@ -121,22 +113,20 @@ public class VioDepthNode implements NodeMain {
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
-                if (USE_DEPTH) {
-                    try {
-                        updateYSTranslation(pose);
-                        Thread.sleep(30);
-                        updateYSRotation(pose);
-                        Thread.sleep(30);
-                        mTangoOdomPublisher.publishOdom();
-                        mTangoPosePublisher.publishPose();
-                        mTangoTfPublisher.publishTransforms();
-                    } catch (Exception e) {
-                    }
+                // Update vio data
+                try {
+                    updateYSTranslation(pose);
+                    updateYSRotation(pose);
+                    mTangoOdomPublisher.publishOdom();
+                    mTangoPosePublisher.publishPose();
+                    mTangoTfPublisher.publishTransforms();
+                } catch (Exception e) {
                 }
             }
 
             @Override
             public void onXyzIjAvailable(final TangoXyzIjData xyzIj) {
+                // Update depth data
                 updateYSDepth(xyzIj);
             }
 
@@ -161,58 +151,21 @@ public class VioDepthNode implements NodeMain {
         mTangoTfPublisher = new TangoTfPublisher(node);
         mPointCloudPublisher = new PointCloudPublisher(node);
 
-        if (USE_DEPTH) {
-            if (mModel == PEANUT) {
-                node.executeCancellableLoop(new CancellableLoop() {
-                    @Override
-                    protected void loop() throws InterruptedException {
-
-                        Thread.sleep(30);
-                        final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
-                        final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
-
-                        // Generate the TF message
-                        updateTranslation(posState);
-                        Thread.sleep(30);
-
-                        updateRotation(rotState);
-                        Thread.sleep(30);
-
-                        mTangoOdomPublisher.publishOdom();
-                        mTangoPosePublisher.publishPose();
-                        mTangoTfPublisher.publishTransforms();
-                    }
-                });
-            }
-        } else {
+        if (mModel == PEANUT) {
             node.executeCancellableLoop(new CancellableLoop() {
                 @Override
                 protected void loop() throws InterruptedException {
 
-                    if (mModel == PEANUT) {
-                        Thread.sleep(30);
-                        final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
-                        final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
-                        // Generate the TF message
+                    Thread.sleep(30);
+                    final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
+                    final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
 
-                        updateTranslation(posState);
-                        Thread.sleep(30);
+                    // Generate the TF message
+                    updateTranslation(posState);
+                    Thread.sleep(30);
 
-                        updateRotation(rotState);
-                        Thread.sleep(30);
-                    }
-
-                    if (mModel == YELLOWSTONE) {
-                        Thread.sleep(30);
-                        mTango.getPoseAtTime(0.0, mFramePairs.get(0), mPose);
-
-                        // Generate the TF message
-                        updateYSTranslation(mPose);
-                        Thread.sleep(30);
-
-                        updateYSRotation(mPose);
-                        Thread.sleep(30);
-                    }
+                    updateRotation(rotState);
+                    Thread.sleep(30);
 
                     mTangoOdomPublisher.publishOdom();
                     mTangoPosePublisher.publishPose();
@@ -236,8 +189,7 @@ public class VioDepthNode implements NodeMain {
     }
 
     @Override
-    public void onShutdownComplete(Node node) {
-    }
+    public void onShutdownComplete(Node node) {}
 
     public void onPause() {
         mTango.unlockConfig();
@@ -254,8 +206,7 @@ public class VioDepthNode implements NodeMain {
     }
 
     @Override
-    public void onError(Node node, Throwable throwable) {
-    }
+    public void onError(Node node, Throwable throwable) {}
 
     private void updateTranslation(double[] state) {
         mTangoOdomPublisher.setPosePoint(state[5],-state[4], state[6]);
@@ -270,25 +221,20 @@ public class VioDepthNode implements NodeMain {
     }
 
     private void updateYSTranslation(TangoPoseData pose) {
-        //System.out.println("Translation updated");
         mTangoOdomPublisher.setPosePoint(pose.translation[0],pose.translation[1], pose.translation[2]);
         mTangoPosePublisher.setPoint(pose.translation[0],pose.translation[1], pose.translation[2]);
         mTangoTfPublisher.setTranslation(pose.translation[0],pose.translation[1], pose.translation[2]);
     }
 
     private void updateYSRotation(TangoPoseData pose) {
-        //System.out.println("Rotation updated");
         mTangoOdomPublisher.setPoseQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
         mTangoPosePublisher.setQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
         mTangoTfPublisher.setRotation(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
     }
 
     private void updateYSDepth(TangoXyzIjData xyzIj) {
-        System.out.println("Processing depth data");
-
         FloatBuffer xyzBuffer = xyzIj.getXyzBuffer().duplicate();
         float[] data = new float[xyzBuffer.limit()];
-        //float[] data = new float[3];
 
         int d = 0;
         while (xyzBuffer.hasRemaining()) {
@@ -296,14 +242,6 @@ public class VioDepthNode implements NodeMain {
             d++;
         }
 
-        /*
-        for (int i = 0; i < 3; i++) {
-            data[i] = xyzBuffer.get();
-            //System.out.println(data[i]);
-        }
-        */
-
-        //System.out.println(data[20]);
         mPointCloudPublisher.onNewPointCloud(data);
     }
 }
