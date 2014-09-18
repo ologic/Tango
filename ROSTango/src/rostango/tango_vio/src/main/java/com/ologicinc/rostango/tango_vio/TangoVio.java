@@ -31,7 +31,7 @@ import org.ros.node.NodeMainExecutor;
 public class TangoVio extends RosActivity {
     private VinsServiceHelper  mVinsServiceHelper;
     //private VioNode mVioNode;
-    private VioDepthNode mVioNode; // To publish vio only, use a VioNode instead.
+    private VioDepthNode mVioNode; // To publish vio only, use VioNode instead.
 
     public TangoVio() {
         super("TangoVio", "TangoVio");
@@ -50,7 +50,8 @@ public class TangoVio extends RosActivity {
     protected void init(NodeMainExecutor nodeMainExecutor) {
         NodeConfiguration nodeConfiguration;
         // XXX VioNode vioNode = new VioNode(mVinsServiceHelper);
-        mVioNode = new VioDepthNode(this); // To publish vio only, use a VioNode instead.
+        //mVioNode = new VioNode(this);
+        mVioNode = new VioDepthNode(this); // To publish vio only, use VioNode instead.
 
         // Required for Peanut support
         if (mVioNode.getModel() == VioNode.PEANUT) {

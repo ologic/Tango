@@ -186,6 +186,20 @@ public class VioNode implements NodeMain {
     public void onShutdownComplete(Node node) {
     }
 
+    public void onPause() {
+        mTango.unlockConfig();
+        mTango.disconnect();
+    }
+
+    public void onResume() {
+        mTango.lockConfig(mConfig);
+        mTango.connect();
+    }
+
+    public void onDestroy() {
+        mTango.unlockConfig();
+    }
+
     @Override
     public void onError(Node node, Throwable throwable) {
     }

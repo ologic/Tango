@@ -58,7 +58,6 @@ public class VioDepthNode implements NodeMain {
             mTango = new Tango(context);
             mModel = YELLOWSTONE;
             Log.i(TAG, "YELLOWSTONE device");
-            //startYellowstone();
         } else if (android.os.Build.MODEL.equals("Peanut")) {
             mVinsServiceHelper = new VinsServiceHelper((android.app.Activity)context);
             mModel = PEANUT;
