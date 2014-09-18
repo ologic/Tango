@@ -113,8 +113,6 @@ public class VioNode implements NodeMain {
                 TangoPoseData.COORDINATE_FRAME_DEVICE)
         );
 
-        // Tango vio data ought to be updated using the Update Listener instead of
-        // getPoseAtTime(), for which no depth equivalent exists.
         mTango.connectListener(mFramePairs, new OnTangoUpdateListener() {
 
             @Override

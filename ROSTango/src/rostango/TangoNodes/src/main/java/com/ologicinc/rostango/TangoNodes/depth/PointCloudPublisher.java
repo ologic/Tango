@@ -16,9 +16,6 @@
 
 package com.ologicinc.rostango.TangoNodes.depth;
 
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-
 import com.google.common.base.Preconditions;
 
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
@@ -35,132 +32,98 @@ import java.util.List;
 import sensor_msgs.PointField;
 
 /**
- * Publishes preview frames.
+ * Publishes Tango depth data as sensor_msgs/PointCloud2 to /camera/depth/points
  *
- * @author damonkohler@google.com (Damon Kohler)
+ * Created by Shiloh Curtis on 9/16/2014
  */
 public class PointCloudPublisher {
 
     private final ConnectedNode connectedNode;
-    //private final Publisher<sensor_msgs.Image> imagePublisher;
-    //private final Publisher<sensor_msgs.CameraInfo> cameraInfoPublisher;
     private final Publisher<sensor_msgs.PointCloud2> pointCloud2Publisher;
     private final Publisher<sensor_msgs.PointField> pointFieldPublisher;
-
-    //private byte[] rawImageBuffer;
-    //private int rawImageSize;
-    //private YuvImage yuvImage;
-    //private Rect rect;
     private ChannelBufferOutputStream stream;
-
-    //private double[] D = {0.2104473, -0.5854902, 0.4575633, 0.0, 0.0};
-    //private double[] K = {237.0, 0.0, 160.0, 0.0, 237.0, 90.0, 0.0, 0.0, 1.0};
-    //private double[] R = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    //private double[] P = {237.0, 0.0, 160.0, 0.0, 0.0, 237.0, 90.0, 0.0, 0.0, 0.0, 1.0, 0.0};
 
     public PointCloudPublisher(ConnectedNode connectedNode) {
         this.connectedNode = connectedNode;
         NameResolver resolver = connectedNode.getResolver().newChild("camera/depth");
-        //imagePublisher = connectedNode.newPublisher(resolver.resolve("image_raw"), sensor_msgs.Image._TYPE);
-        //cameraInfoPublisher = connectedNode.newPublisher(resolver.resolve("camera_info"), sensor_msgs.CameraInfo._TYPE);
         pointCloud2Publisher = connectedNode.newPublisher(resolver.resolve("points"), sensor_msgs.PointCloud2._TYPE);
         pointFieldPublisher = connectedNode.newPublisher(resolver.resolve("point_field"), sensor_msgs.PointField._TYPE);
         stream = new ChannelBufferOutputStream(MessageBuffers.dynamicBuffer());
     }
 
-    public void onNewPointCloud(float[] data) {//, int length) {//, int width, int height) {
+    public void onNewPointCloud(float[] data) {
         Preconditions.checkNotNull(data);
-        //Preconditions.checkNotNull(length);
-        //Preconditions.checkNotNull(width);
-        //Preconditions.checkNotNull(height);
 
         Time currentTime = connectedNode.getCurrentTime();
-        String frameId = "phone";//"camera"; //_optical"; // suffix _optical should specify correct coordinate system?? but rviz can't find transform
+        String frameId = "phone";
 
         sensor_msgs.PointCloud2 pointCloud2 = pointCloud2Publisher.newMessage();
         pointCloud2.getHeader().setStamp(currentTime);
         pointCloud2.getHeader().setFrameId(frameId);
 
-        List<PointField> f = pointCloud2.getFields();
+        //List<PointField> f = pointCloud2.getFields();
         sensor_msgs.PointField xField = pointFieldPublisher.newMessage();
         xField.setName("x");
         xField.setDatatype(PointField.FLOAT32);
         xField.setCount(1);
-        f.add(xField);
+        xField.setOffset(0);
+        pointCloud2.getFields().add(xField);
         sensor_msgs.PointField yField = pointFieldPublisher.newMessage();
         yField.setName("y");
         yField.setDatatype(PointField.FLOAT32);
         yField.setCount(1);
         yField.setOffset(4);
-        f.add(yField);
+        pointCloud2.getFields().add(yField);
         sensor_msgs.PointField zField = pointFieldPublisher.newMessage();
         zField.setName("z");
         zField.setDatatype(PointField.FLOAT32);
         zField.setCount(1);
         zField.setOffset(8);
-        f.add(zField);
+        pointCloud2.getFields().add(zField);
+
+        for (int i = 0; i < 3; i++) {
+            //System.out.println(pointCloud2.getFields().get(i).getName());
+        }
 
         for (int i = 0; i < data.length; i++) {
             try{
+                byte[] bytes = ByteBuffer.allocate(4).putFloat(-1*data[i]).array();
                 //int bits = Float.floatToIntBits(data[i]);
-                //stream.writeByte((byte)(bits & 0xff));
-                //stream.writeByte((byte)((bits >> 8) & 0xff));
-                //stream.writeByte((byte)((bits >> 16) & 0xff));
-                //stream.writeByte((byte)((bits >> 24) & 0xff));
-
-                byte[] bytes = ByteBuffer.allocate(4).putFloat(data[i]).array();
-                for (int b = 0; b < 4; b++) {
+                //byte[] bytes = new byte[4];
+                //bytes[0] = (byte)(bits & 0xff);
+                //bytes[1] = (byte)((bits >> 8) & 0xff);
+                //bytes[2] = (byte)((bits >> 16) & 0xff);
+                //bytes[3] = (byte)((bits >> 24) & 0xff);
+                //float f = ByteBuffer.wrap(bytes).getFloat();
+                //if (f != data[i]) {
+                    //System.out.println("Float -> byte conversion failed!");
+                    //System.out.println(f);
+                    //System.out.println(data[i]);
+                //}
+                for (int b = 3; b >= 0; b--) {
                     stream.writeByte(bytes[b]);
                 }
             } catch (Exception e) {}
         }
 
         // set data in pointCloud2
-        pointCloud2.setWidth(data.length); // not sure of pointcloud ordering, so will assume it's unordered
+        pointCloud2.setWidth((data.length) / 3); // Tango pointcloud data doesn't seem to be ordered
         pointCloud2.setHeight(1);
-        pointCloud2.setPointStep(4);
-        pointCloud2.setRowStep(4 * (data.length));
+        pointCloud2.setPointStep(12);
+        pointCloud2.setRowStep((pointCloud2.getPointStep()) * (pointCloud2.getWidth()));
         //pointCloud2.setIsBigendian(java.nio.ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)); // not sure if necessary
+        //pointCloud2.setIsDense(true);
+        pointCloud2.setIsBigendian(false);
         pointCloud2.setData(stream.buffer().copy());
+        byte[] bytes = new byte[4];
+        for (int i = 0; i < data.length; i++) {
+            for (int b = 0; b < 4; b++) {
+                bytes[b] = stream.buffer().getByte(i*4 + b);
+            }
+            System.out.println(ByteBuffer.wrap(bytes).getFloat());
+        }
         stream.buffer().clear();
 
         pointCloud2Publisher.publish(pointCloud2);
-
-        /*
-        sensor_msgs.Image image = imagePublisher.newMessage();
-        image.getHeader().setStamp(currentTime);
-        image.getHeader().setFrameId(frameId);
-
-        for (int i = 0; i < data.length; i++){
-            try {
-                stream.writeShort((short)data[i]);
-            }
-            catch (Exception e){
-
-            }
-        }
-        image.setStep(360);
-        image.setWidth(width);
-        image.setHeight(height);
-        image.setEncoding("16UC1");
-        image.setData(stream.buffer().copy());
-        stream.buffer().clear();
-
-        imagePublisher.publish(image);
-
-        sensor_msgs.CameraInfo cameraInfo = cameraInfoPublisher.newMessage();
-        cameraInfo.getHeader().setStamp(currentTime);
-        cameraInfo.getHeader().setFrameId(frameId);
-
-        cameraInfo.setDistortionModel("plumb_bob");
-        cameraInfo.setD(D);
-        cameraInfo.setK(K);
-        cameraInfo.setR(R);
-        cameraInfo.setP(P);
-
-        cameraInfo.setWidth(width);
-        cameraInfo.setHeight(height);
-        cameraInfoPublisher.publish(cameraInfo);
-        */
     }
 }
