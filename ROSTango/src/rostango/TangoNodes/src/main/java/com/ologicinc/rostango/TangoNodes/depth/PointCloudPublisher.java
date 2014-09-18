@@ -31,7 +31,7 @@ import sensor_msgs.PointField;
 import java.nio.ByteBuffer;
 
 /**
- * Publishes Tango depth data as sensor_msgs/PointCloud2 to the topic /camera/depth/points
+ * Publishes Tango depth data as sensor_msgs/PointCloud2 to the topic /camera/depth/points.  
  *
  * Created by Shiloh Curtis on 9/16/2014
  */
@@ -48,7 +48,8 @@ public class PointCloudPublisher {
         NameResolver resolver = connectedNode.getResolver().newChild("camera/depth");
         pointCloud2Publisher = connectedNode.newPublisher(resolver.resolve("points"),
                 sensor_msgs.PointCloud2._TYPE);
-        // PointFields are not published separately, but a publisher is needed to generate them.
+        // PointFields are not published separately from the PointCloud2 message, but the
+        // easiest way to generate them is with a publisher that never publishes the message.
         pointFieldPublisher = connectedNode.newPublisher(resolver.resolve("point_field"),
                 sensor_msgs.PointField._TYPE);
         stream = new ChannelBufferOutputStream(MessageBuffers.dynamicBuffer());
@@ -106,6 +107,7 @@ public class PointCloudPublisher {
         pointCloud2.setHeight(1);
         pointCloud2.setPointStep(12);
         pointCloud2.setRowStep((pointCloud2.getPointStep()) * (pointCloud2.getWidth()));
+        // Even with is_bigendian set to true, rviz won't correctly display big-endian xyz values.
         pointCloud2.setIsBigendian(false);
         pointCloud2.setData(stream.buffer().copy());
         stream.buffer().clear();

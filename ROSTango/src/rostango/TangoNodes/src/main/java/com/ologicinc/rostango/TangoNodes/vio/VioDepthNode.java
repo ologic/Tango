@@ -50,7 +50,6 @@ public class VioDepthNode implements NodeMain {
     private int mModel;
 
     public VioDepthNode(Context context) {
-
         Log.i(TAG, "Build.MODEL="+android.os.Build.MODEL);
 
         if (android.os.Build.MODEL.equals("Yellowstone")) {
@@ -91,11 +90,11 @@ public class VioDepthNode implements NodeMain {
         // Lock configuration and connect to Tango
         mTango.lockConfig(mConfig);
 
-        int i = 0;
-        while (i != 1) {
+        boolean i = false;
+        while (!i) {
             if (mTango.connect() == Tango.STATUS_SUCCESS) {
                 System.out.println("Tango connected");
-                i = 1;
+                i = true;
             } else {
                 System.out.println("Could not connect to Tango");
             }
@@ -154,7 +153,6 @@ public class VioDepthNode implements NodeMain {
             node.executeCancellableLoop(new CancellableLoop() {
                 @Override
                 protected void loop() throws InterruptedException {
-
                     Thread.sleep(30);
                     final double[] posState = mVinsServiceHelper.getStateInFullStateFormat();
                     final double[] rotState = mVinsServiceHelper.getStateInUnityFormat();
