@@ -24,6 +24,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 // import android.widget.Toast;
 
+import com.MAVLink.Messages.MAVLinkPacket;
+import com.MAVLink.Messages.ardupilotmega.msg_set_gps_global_origin;
+import com.MAVLink.Messages.ardupilotmega.msg_vision_position_estimate;
 import com.github.ologic.android_ologic.usbserial.driver.UsbSerialDriver;
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
 import com.ologicinc.rostango.TangoNodes.vio.VioNode;
@@ -72,7 +75,6 @@ public class TangoSerial extends RosActivity {
         VioListenerNode vioListenerNode = new VioListenerNode(mSerialDriver, mStatsView, vioNode.getModel());
         NodeConfiguration nodeConfiguration;
 
-
         if (getMasterUri().getHost().equals(Address.LOOPBACK)) {
             nodeConfiguration = NodeConfiguration.newPrivate();
         } else {
@@ -84,6 +86,8 @@ public class TangoSerial extends RosActivity {
         nodeMainExecutor.execute(vioNode, nodeConfiguration);
         nodeMainExecutor.execute(vioListenerNode, nodeConfiguration);
     }
+
+
 
 
     // Starts the activity, using the supplied node executor and driver instance.
