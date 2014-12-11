@@ -71,6 +71,17 @@ public class VioListenerNode implements NodeMain {
         // Connect the usb
         usbConnect();
 
+        // Send Initial Home Location
+        msg_vision_position_estimate mavLinkVision = new msg_vision_position_estimate();
+        msg_set_gps_global_origin gps_global_origin = new msg_set_gps_global_origin();
+        gps_global_origin.altitude = 10;
+        gps_global_origin.longitude = -122;
+        gps_global_origin.latitude = 37;
+        gps_global_origin.target_system = 100;
+
+        MAVLinkPacket mavPacketGPS = gps_global_origin.pack();
+        sendMavMessage(mavPacketGPS);
+
         // Create the heartbeat
         mHeartbeat = new TangoHeartbeat(this,1);
         mHeartbeat.setActive(true);
