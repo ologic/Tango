@@ -15,6 +15,10 @@ import org.ros.android.RosActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import com.google.atap.tangoservice.Tango;
+
+
+import com.google.atap.tangoservice.TangoConfig;
 import com.ologicinc.rostango.TangoNodes.depth.*;
 
 /**
@@ -50,6 +54,7 @@ public class DepthScanActivity extends RosActivity {
     requestWindowFeature(Window.FEATURE_NO_TITLE);
     setContentView(R.layout.layoutdepth);
     mDepthView = (RosDepthViewSurface) findViewById(R.id.depthview);
+      getPermissions();
   }
 
     @Override
@@ -64,7 +69,9 @@ public class DepthScanActivity extends RosActivity {
   @Override
   protected void onResume() {
     mDepthView.startCamera();
+
     super.onResume();
+
   }
 
   @Override
@@ -72,4 +79,11 @@ public class DepthScanActivity extends RosActivity {
     mDepthView.stopCamera();
     super.onPause();
   }
+
+    private void getPermissions() {
+
+        startActivityForResult(Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_MOTION_TRACKING),  Tango.TANGO_INTENT_ACTIVITYCODE);
+
+
+    }
 }

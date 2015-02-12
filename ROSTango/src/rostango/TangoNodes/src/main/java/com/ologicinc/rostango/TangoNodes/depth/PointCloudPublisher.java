@@ -18,6 +18,7 @@ package com.ologicinc.rostango.TangoNodes.depth;
 
 import com.google.common.base.Preconditions;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.ros.internal.message.MessageBuffers;
 import org.ros.message.Time;
@@ -28,6 +29,7 @@ import org.ros.node.topic.Publisher;
 import sensor_msgs.PointCloud2;
 import sensor_msgs.PointField;
 
+import java.nio.FloatBuffer;
 import java.nio.ByteBuffer;
 
 /**
@@ -42,6 +44,7 @@ public class PointCloudPublisher {
     private final Publisher<sensor_msgs.PointCloud2> pointCloud2Publisher;
     private final Publisher<sensor_msgs.PointField> pointFieldPublisher;
     private ChannelBufferOutputStream stream;
+    sensor_msgs.PointCloud2 pointCloud2;
 
     public PointCloudPublisher(ConnectedNode connectedNode) {
         this.connectedNode = connectedNode;
@@ -52,7 +55,10 @@ public class PointCloudPublisher {
         // easiest way to generate them is with a publisher that never publishes the message.
         pointFieldPublisher = connectedNode.newPublisher(resolver.resolve("point_field"),
                 sensor_msgs.PointField._TYPE);
+
         stream = new ChannelBufferOutputStream(MessageBuffers.dynamicBuffer());
+        pointCloud2 = pointCloud2Publisher.newMessage();
+        setPointFields(pointCloud2); // Sets up PointCloud2 with float32 fields for x, y, and z
     }
 
     private void setPointFields(PointCloud2 pc) {
@@ -76,18 +82,19 @@ public class PointCloudPublisher {
         pc.getFields().add(zField);
     }
 
-    public void onNewPointCloud(float[] data) {
+    public void onNewPointCloud(byte[] data) {
         Preconditions.checkNotNull(data);
 
         Time currentTime = connectedNode.getCurrentTime();
         String frameId = "phone";
 
-        sensor_msgs.PointCloud2 pointCloud2 = pointCloud2Publisher.newMessage();
+
         pointCloud2.getHeader().setStamp(currentTime);
         pointCloud2.getHeader().setFrameId(frameId);
 
-        setPointFields(pointCloud2); // Sets up PointCloud2 with float32 fields for x, y, and z
 
+
+        /*
         for (int i = 0; i < data.length; i++) {
             try{
                 byte[] bytes;
@@ -101,16 +108,31 @@ public class PointCloudPublisher {
                 }
             } catch (Exception e) {}
         }
+        */
 
         // Set PointCloud2 data
-        pointCloud2.setWidth((data.length) / 3);
+        pointCloud2.setWidth((data.length) / 12);
         pointCloud2.setHeight(1);
         pointCloud2.setPointStep(12);
+        pointCloud2.setIsDense(true);
+
         pointCloud2.setRowStep((pointCloud2.getPointStep()) * (pointCloud2.getWidth()));
+
         // Even with is_bigendian set to true, rviz won't correctly display big-endian xyz values.
         pointCloud2.setIsBigendian(false);
-        pointCloud2.setData(stream.buffer().copy());
+
         stream.buffer().clear();
+        try {
+            stream.write(data);
+        }
+        catch(Exception ex) {
+
+        }
+
+
+
+        pointCloud2.setData((ChannelBuffer)stream.buffer());
+
 
         pointCloud2Publisher.publish(pointCloud2);
     }

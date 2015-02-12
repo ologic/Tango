@@ -44,7 +44,7 @@
   <build_depend>android_exras</build_depend>
   <build_depend>rosjava_build_tools</build_depend>
   <build_depend>rosjava_core</build_depend>
-
+  <build_depend>tf2_android</build_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

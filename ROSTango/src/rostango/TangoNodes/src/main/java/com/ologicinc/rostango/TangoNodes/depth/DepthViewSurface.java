@@ -118,14 +118,14 @@ public class DepthViewSurface extends SurfaceView implements Callback,
     public void startCamera() {
         mSurfaceHolder.addCallback(this);
         try {
-            mCamera = Camera.open();
+            mCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
         } catch (RuntimeException e) {
             return;
         }
         Camera.Parameters parameters = mCamera.getParameters();
         // Note: sf modes are "all", "big-rgb", "small-rgb", "depth", "ir".
-        parameters.set("sf-mode", "big-rgb");  // Show the RGB image.
-        mCamera.setParameters(parameters);
+        //parameters.set("sf-mode", "big-rgb");  // Show the RGB image.
+        //mCamera.setParameters(parameters);
         mCamera.startPreview();
     }
 

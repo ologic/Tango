@@ -33,25 +33,27 @@ repositories {
 
 dependencies {
     /* compile project(':local_android_library_dependency') */
-  compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
-  compile 'org.ros.android_core:android_honeycomb_mr2:[0.1,0.2)'
-  compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
-  compile('org.ros.tf2:tf2_ros:0.0.0-SNAPSHOT@aar') {
-    transitive=true
-  }
-  compile files ('libs/androidvioclient.jar')
-  compile project(':TangoNodes')
-  /* org/ros/tf2/tf2_ros/0.0.0-SNAPSHOT/tf2_ros-0.0.0-20140618.182828-2.aar */
+    compile 'org.ros.android_core:android_gingerbread_mr1:[0.1,)'
+    compile 'org.ros.android_core:android_honeycomb_mr2:[0.1,0.2)'
+    compile 'com.github.rosjava.android_extras:gingerbread:[0.1,0.2)'
+    /*compile('org.ros.tf2:tf2_ros:0.0.0-SNAPSHOT@aar') {
+        transitive = true
+    }
+    */
+    //compile files('libs/androidvioclient.jar')
+    compile project(':TangoNodes')
+    /* org/ros/tf2/tf2_ros/0.0.0-SNAPSHOT/tf2_ros-0.0.0-20140618.182828-2.aar */
 }
 
 apply plugin: 'android'
 
 android {
-  packagingOptions {
-    /* https://github.com/rosjava/android_core/issues/194 */
-    exclude 'META-INF/LICENSE.txt'
-    exclude 'META-INF/NOTICE.txt'
-  }
-  compileSdkVersion 18
+    packagingOptions {
+        /* https://github.com/rosjava/android_core/issues/194 */
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    compileSdkVersion 18
+    buildToolsVersion '21.1.2'
 }
  

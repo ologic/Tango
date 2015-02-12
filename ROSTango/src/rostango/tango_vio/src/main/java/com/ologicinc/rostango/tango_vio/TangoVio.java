@@ -17,21 +17,26 @@
 package com.ologicinc.rostango.tango_vio;
 
 import android.os.Bundle;
+import android.widget.TextView;
+
+import com.google.atap.tangoservice.Tango;
+
 
 import com.motorola.atap.androidvioservice.VinsServiceHelper;
-import com.ologicinc.rostango.TangoNodes.vio.VioNode;
 import com.ologicinc.rostango.TangoNodes.vio.VioDepthNode;
 
-import org.ros.address.Address;
 import org.ros.address.InetAddressFactory;
-import org.ros.android.RosActivity;
+import org.ros.android.TangoActivity;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
-public class TangoVio extends RosActivity {
+public class TangoVio extends TangoActivity {
     private VinsServiceHelper  mVinsServiceHelper;
     //private VioNode mVioNode;
+
     private VioDepthNode mVioNode; // To publish vio only, use VioNode instead.
+
+    private TextView mTxtInfo;
 
     public TangoVio() {
         super("TangoVio", "TangoVio");
@@ -44,6 +49,17 @@ public class TangoVio extends RosActivity {
         //mVinsServiceHelper = new VinsServiceHelper(this);
 
         setContentView(R.layout.main);
+        mTxtInfo = (TextView)findViewById(R.id.txtInfo);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getPermissions();
+
+
+
     }
 
     @Override
@@ -53,20 +69,9 @@ public class TangoVio extends RosActivity {
         //mVioNode = new VioNode(this);
         mVioNode = new VioDepthNode(this); // To publish vio only, use VioNode instead.
 
-        // Required for Peanut support
-        if (mVioNode.getModel() == VioNode.PEANUT) {
-            mVinsServiceHelper = new VinsServiceHelper(this);
-            mVioNode.setVinsServiceHelper(mVinsServiceHelper);
-        }
 
-        if (getMasterUri().getHost().equals(Address.LOOPBACK)) {
-            nodeConfiguration = NodeConfiguration.newPrivate();
-        } else {
-            nodeConfiguration =
-                    NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
-        }
-
-        nodeConfiguration.setMasterUri(getMasterUri());
+        nodeConfiguration =  NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress(), getMasterUri());
+       // nodeConfiguration.setMasterUri(getMasterUri());
         nodeMainExecutor.execute(mVioNode, nodeConfiguration);
     }
 
@@ -84,6 +89,7 @@ public class TangoVio extends RosActivity {
         if (mVioNode != null) {
             mVioNode.onResume();
         }
+
     }
 
     @Override
@@ -94,4 +100,35 @@ public class TangoVio extends RosActivity {
         }
     }
 
+    private void getPermissions() {
+
+        startActivityForResult(Tango.getRequestPermissionIntent(Tango.PERMISSIONTYPE_MOTION_TRACKING),  Tango.TANGO_INTENT_ACTIVITYCODE);
+
+
+    }
+
+
+/*
+    private void getSensorLocations() {
+
+        TangoPoseData cToIMUPose;
+        TangoCoordinateFramePair cToIMUPair;
+
+        cToIMUPair.baseFrame = TangoPoseData.COORDINATE_FRAME_DEVICE;
+        cToIMUPair.targetFrame = TangoPoseData.COORDINATE_FRAME_DISPLAY;
+
+        Tango tango = mVioNode.etTango();
+
+        tango.getPose(0.0, cToIMUPair, &cToIMUPose);
+
+        cToIMU_position = ToVector(cToIMUPose.translation[0],
+                cToIMUPose.translation[1],
+                cToIMUPose.translation[2]);
+        cToIMU_rotation = ToQuaternion(cToIMUPose.orientation[3],
+                cToIMUPose.orientation[0],
+                cToIMUPose.orientation[1],
+                cToIMUPose.orientation[2]);
+
+    }
+*/
 }

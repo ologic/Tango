@@ -8,5 +8,13 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="Hello World, TangoVio" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/txtInfo"
+        android:layout_gravity="center_horizontal" />
 </LinearLayout>
 

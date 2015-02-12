@@ -57,13 +57,15 @@ public class VioNode implements NodeMain {
     public static final int YELLOWSTONE = 1;
 
     private int mModel;
+    private boolean isStarted = false;
 
 
     public VioNode(Context context) {
 
         Log.i(TAG, "Build.MODEL="+android.os.Build.MODEL);
 
-        if (android.os.Build.MODEL.equals("Yellowstone")) {
+        //if (android.os.Build.MODEL.equals("Yellowstone")) {
+        if (android.os.Build.MODEL.startsWith("Project Tango Tablet Development Kit")) {
             // Instantiate the Yellowstone Tango service
             mTango = new Tango(context);
             mModel = YELLOWSTONE;
@@ -93,13 +95,13 @@ public class VioNode implements NodeMain {
     private void startYellowstone() {
         // Create a new Tango Configuration and enable the MotionTracking API
         mConfig = new TangoConfig();
-        mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT, mConfig);
+        mConfig=mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
         mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
-        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORESET, false);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
 
         // Lock configuration and connect to Tango
-        mTango.lockConfig(mConfig);
-        mTango.connect();
+        //mTango.lockConfig();
+        mTango.connect(mConfig);
 
         // Select coordinate frame pairs
         mFramePairs = new ArrayList<TangoCoordinateFramePair>();
@@ -138,13 +140,15 @@ public class VioNode implements NodeMain {
     @Override
     public void onStart(ConnectedNode node) {
 
-        if (mModel==YELLOWSTONE) {
-            startYellowstone();
-        }
 
         mTangoOdomPublisher = new TangoOdomPublisher(node);
         mTangoPosePublisher = new TangoPosePublisher(node);
         mTangoTfPublisher = new TangoTfPublisher(node);
+
+        if (mModel==YELLOWSTONE) {
+            startYellowstone();
+        }
+
 
         if (mModel == PEANUT) { // For Yellowstone, OnTangoUpdateListener updates vio data
             node.executeCancellableLoop(new CancellableLoop() {
@@ -168,6 +172,7 @@ public class VioNode implements NodeMain {
                 }
             });
         }
+        isStarted =true;
     }
 
     @Override
@@ -177,8 +182,11 @@ public class VioNode implements NodeMain {
         }
 
         if (mModel==YELLOWSTONE) {
-            mTango.unlockConfig();
-            mTango.disconnect();
+            //mTango.unlockConfig();
+            if (isStarted) {
+                mTango.disconnect();
+                isStarted = false;
+            }
         }
     }
 
@@ -187,17 +195,23 @@ public class VioNode implements NodeMain {
     }
 
     public void onPause() {
-        mTango.unlockConfig();
-        mTango.disconnect();
+        //mTango.unlockConfig();
+
+        if (isStarted || mModel ==PEANUT) {
+            mTango.disconnect();
+        }
     }
 
     public void onResume() {
-        mTango.lockConfig(mConfig);
-        mTango.connect();
+        //mTango.lockConfig();
+
+        if (isStarted || mModel ==PEANUT) {
+            mTango.connect(mConfig);
+        }
     }
 
     public void onDestroy() {
-        mTango.unlockConfig();
+       //mTango.unlockConfig();
     }
 
     @Override
@@ -226,5 +240,9 @@ public class VioNode implements NodeMain {
         mTangoOdomPublisher.setPoseQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
         mTangoPosePublisher.setQuat(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
         mTangoTfPublisher.setRotation(pose.rotation[0], pose.rotation[1], pose.rotation[2],pose.rotation[3]);
+    }
+
+    public Tango getTango() {
+        return mTango;
     }
 }

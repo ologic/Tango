@@ -28,11 +28,13 @@ buildscript {
             }
         }
         mavenLocal()
+        mavenCentral()
         maven {
             url rosMavenRepository
         }
     }
     dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
         classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '0.1.22'
         // compile 'org.ros.tf2:tf2_ros:0.0.0-SNAPSHOT'
     }

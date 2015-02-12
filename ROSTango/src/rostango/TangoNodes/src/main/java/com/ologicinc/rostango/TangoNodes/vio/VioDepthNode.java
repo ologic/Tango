@@ -23,9 +23,17 @@ import com.google.atap.tangoservice.TangoCoordinateFramePair;
 
 import android.content.Context;
 import android.util.Log;
+import android.app.Activity;
+import android.os.Bundle;
+import android.content.Intent;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.nio.FloatBuffer;
+import android.util.*;
 
 import com.ologicinc.rostango.TangoNodes.depth.*;
 
@@ -48,11 +56,13 @@ public class VioDepthNode implements NodeMain {
     public static final int YELLOWSTONE = 1;
 
     private int mModel;
+    private boolean isStarted =false;
+
 
     public VioDepthNode(Context context) {
         Log.i(TAG, "Build.MODEL="+android.os.Build.MODEL);
 
-        if (android.os.Build.MODEL.equals("Yellowstone")) {
+        if (android.os.Build.MODEL.equals("Project Tango Tablet Development Kit")) {
             // Instantiate the Yellowstone Tango service
             mTango = new Tango(context);
             mModel = YELLOWSTONE;
@@ -82,23 +92,26 @@ public class VioDepthNode implements NodeMain {
     private void startYellowstone() {
         // Create a new Tango Configuration and enable the MotionTracking API
         mConfig = new TangoConfig();
-        mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT, mConfig);
+        mConfig=mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
         mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_MOTIONTRACKING, true);
         mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
-        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORESET, false);
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_AUTORECOVERY, true);
+
 
         // Lock configuration and connect to Tango
-        mTango.lockConfig(mConfig);
+        //mTango.lockConfig(mConfig);
 
-        boolean i = false;
-        while (!i) {
-            if (mTango.connect() == Tango.STATUS_SUCCESS) {
-                System.out.println("Tango connected");
-                i = true;
-            } else {
-                System.out.println("Could not connect to Tango");
-            }
-        }
+       // boolean i = false;
+        //while (!i) {
+
+        mTango.connect(mConfig);
+            //if ( ) {
+             //   System.out.println("Tango connected");
+             //   i = true;
+            //} else {
+             //   System.out.println("Could not connect to Tango");
+            //}
+        //}
 
         // Select coordinate frame pairs
         mFramePairs = new ArrayList<TangoCoordinateFramePair>();
@@ -134,20 +147,26 @@ public class VioDepthNode implements NodeMain {
             }
         };
         mTango.connectListener(mFramePairs, tangoUpdateListener);
+
+
     }
+
+
 
     @Override
     public void onStart(ConnectedNode node) {
+
+
+        mTangoOdomPublisher = new TangoOdomPublisher(node);
+        mTangoPosePublisher = new TangoPosePublisher(node);
+        mTangoTfPublisher = new TangoTfPublisher(node);
+        mPointCloudPublisher = new PointCloudPublisher(node);
 
         if (mModel==YELLOWSTONE) {
             System.out.println("Starting Yellowstone");
             startYellowstone();
         }
 
-        mTangoOdomPublisher = new TangoOdomPublisher(node);
-        mTangoPosePublisher = new TangoPosePublisher(node);
-        mTangoTfPublisher = new TangoTfPublisher(node);
-        mPointCloudPublisher = new PointCloudPublisher(node);
 
         if (mModel == PEANUT) {
             node.executeCancellableLoop(new CancellableLoop() {
@@ -170,6 +189,7 @@ public class VioDepthNode implements NodeMain {
                 }
             });
         }
+        isStarted = true;
 
     }
 
@@ -180,8 +200,11 @@ public class VioDepthNode implements NodeMain {
         }
 
         if (mModel==YELLOWSTONE) {
-            mTango.unlockConfig();
-            mTango.disconnect();
+            //mTango.unlockConfig();
+            if (isStarted) {
+                mTango.disconnect();
+                isStarted=false;
+            }
         }
     }
 
@@ -189,17 +212,21 @@ public class VioDepthNode implements NodeMain {
     public void onShutdownComplete(Node node) {}
 
     public void onPause() {
-        mTango.unlockConfig();
-        mTango.disconnect();
+        //mTango.unlockConfig();
+        if(isStarted) {
+            mTango.disconnect();
+        }
     }
 
     public void onResume() {
-        mTango.lockConfig(mConfig);
-        mTango.connect();
+        //mTango.lockConfig(mConfig);
+        if(isStarted) {
+            mTango.connect(mConfig);
+        }
     }
 
     public void onDestroy() {
-        mTango.unlockConfig();
+     //mTango.unlockConfig();
     }
 
     @Override
@@ -230,15 +257,34 @@ public class VioDepthNode implements NodeMain {
     }
 
     private void updateYSDepth(TangoXyzIjData xyzIj) {
-        FloatBuffer xyzBuffer = xyzIj.getXyzBuffer().duplicate();
-        float[] data = new float[xyzBuffer.limit()];
 
-        int d = 0;
-        while (xyzBuffer.hasRemaining()) {
-            data[d] = xyzBuffer.get();
-            d++;
+
+
+        byte[] depthData = new byte[xyzIj.xyzCount * 3 * 4];
+
+        FileInputStream fileStream = new FileInputStream(xyzIj.xyzParcelFileDescriptor.getFileDescriptor());
+        try {
+            fileStream.read(depthData, xyzIj.xyzParcelFileDescriptorOffset, depthData.length);
+            fileStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        mPointCloudPublisher.onNewPointCloud(data);
+        ByteBuffer bb = ByteBuffer.wrap(depthData).order(ByteOrder.LITTLE_ENDIAN);
+       // FloatBuffer fb = bb.asFloatBuffer();
+
+
+
+
+        //int d = 0;
+        //while (xyzBuffer.hasRemaining()) {
+        //    data[d] = xyzBuffer.get();
+        //   d++;
+        //}
+
+
+
+        mPointCloudPublisher.onNewPointCloud(bb.array().clone());
+
     }
 }
